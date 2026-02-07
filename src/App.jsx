@@ -13,6 +13,8 @@ import goku from "./assets/Frame3.jpg";
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
+  const PARENT = useRef(null);
+
   // Transition trigger refs (ONLY 4 TRANSITIONS NOW)
   const transition1Ref = useRef(null);
   const transition2Ref = useRef(null);
@@ -37,7 +39,7 @@ function App() {
   return (
     <>
       {/* SCROLL CONTAINER - REDUCED HEIGHT (5 pages, 4 transitions) */}
-      <div className="relative w-full" style={{ height: '1100vh' }}>
+      <div className="relative w-full" style={{ height: '1100vh' }} ref={PARENT}>
         {/* Page 1 viewing area (100vh) */}
         <div className="h-screen" />
         
@@ -49,7 +51,7 @@ function App() {
 
         
         {/* Gap after transition (50vh) */}
-        <div style={{ height: '50vh' }} />
+        <div style={{ height: '450vh' }} />
         
         {/* Page 2 viewing area (100vh) */}
         <div className="h-screen" />
@@ -123,7 +125,7 @@ function App() {
 
        {/* PAGE 2: SecondSection (Eva + Gundam + Slabs) */}
 <div ref={spaceSectionRef} className="fixed inset-0 w-full h-screen" style={{ zIndex: 8, opacity: 1 }}>
-  <SecondSection />  {/* ✅ USE SecondSection */}
+  <SecondSection father={PARENT} />  {/* ✅ USE SecondSection */}
 </div>
 
 
@@ -166,6 +168,9 @@ function App() {
           originPosition="top-left"
           isDual={false}
           delay={0.25}
+          onComplete={() => {
+                window.dispatchEvent(new CustomEvent('incomingSecond'));
+  }}
         />
 
         {/* Transition 2→3: BOTTOM-RIGHT */}

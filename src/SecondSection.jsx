@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gndm from "./assets/gandam.png";
@@ -6,12 +6,72 @@ import eva from "./assets/pokemon.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SecondSection = () => {
+const SecondSection = ({father}) => {
   const sectionRef = useRef(null);
   const leftCharacterRef = useRef(null);
   const rightCharacterRef = useRef(null);
   const messageRef = useRef(null);
-  
+
+  useEffect(() => {
+    console.log("🎬 Scroll Timeline STARTED!");
+
+    // SINGLE SMOOTH TIMELINE - ALL 7 cards animate together on scroll
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: father.current,
+        start: "top -1550vh",        // Start when grid enters 20% from top
+        end: "bottom ",       // End when grid leaves 20% from bottom
+        scrub: 1,                // Perfect scroll sync       // PIN grid during animation (cards stay visible)
+      }
+    });
+
+    // Animate ALL 7 cards in PERFECT sequence FROM THE BACK
+    gsap.utils.toArray(".card").forEach((card, i,cards) => {
+      
+      tl.fromTo(card, 
+        {
+          z: -500, 
+          x: 0,             // DEEP 3D SPACE
+               // FLIPPED (back facing)
+          opacity: 0,
+          scale: 0,
+          ease: "power1.out",
+          y: 100
+        },
+        {
+          z: 0,  
+          x:-140 + 280*(i%2),               // TO FRONT
+                 // FACE FRONT
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          ease: "power1.out",
+          duration: 6
+        },
+        i*6 + 12 // 0.15s stagger = buttery smooth!
+      );
+       if(i>0){
+     tl.to(
+      cards[i - 1],
+      {
+        opacity: 0,
+        ease: "power1.out",
+        duration:3
+      },
+      i*6+12
+    ); }
+      
+    });
+   
+
+    // Auto-scroll after timeline completes
+    
+
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
 
 //   useLayoutEffect(() => {
     
@@ -76,7 +136,7 @@ const SecondSection = () => {
   return (
     <div
       ref={sectionRef}
-      className="relative w-full h-screen overflow-hidden"
+      className="relative w-full h-full overflow-hidden"
     >
       {/* --- BACKGROUND LAYER (SPACE) --- */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0015] via-[#1a0b2e] to-[#0d1b2a] -z-10"></div>
@@ -97,25 +157,25 @@ const SecondSection = () => {
       {/* --- RIGHT CHARACTER --- */}
       <div
         ref={rightCharacterRef}
-        className="absolute top-0 md:right-[-12vh] right-[-8vh] h-full w-[75vw] md:w-[45vw] z-20 pointer-events-none"
+        className="absolute top-0 md:right-[-12vh] right-[-8vh] h-[100vh] w-[75vw] md:w-[45vw] z-20 pointer-events-none"
       >
         <img
           src={gndm}
           alt="Right Character"
-          className="w-[100vw] h-full bottom-10 md:bottom-0 object-contain object-right-bottom relative right-0 drop-shadow-[0_0_40px_rgba(0,243,255,0.6)]"
+          className="w-[100vw] p-0 m-0 h-full bottom-2 md:bottom-0 object-contain object-right-bottom relative right-0 drop-shadow-[0_0_40px_rgba(0,243,255,0.6)]"
         />
         {/* PLACEHOLDER */}
         <div className="absolute top-10 right-40 w-32 h-[80vh] bg-gradient-to-b from-[#00F3FF] to-[#FF007A] rounded-lg shadow-[0_0_50px_rgba(0,243,255,0.8)]  opacity-0 md:opacity-100  "></div>
       </div>
 
       {/*...Button..*/}
-      <div class="transform skew-x-[-12deg] border-2 bg-[#050b14]/85 h-[5vh] w-[5vw] p-6 relative top-[70vh] left-[15vw]  backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden">
+      <div class="transform skew-x-[-12deg] bg-[#050b14]/85 h-[5vh] md:w-[5vw] w-[20vw] p-6 relative md:top-[70vh] top-[80vh] left-[15vw]  backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">
        <div className="absolute bottom-0 left-0 w-[2px] h-6 bg-[#00F3FF]"></div>
           <div className="absolute top-0 right-0 w-10 h-[2px] bg-[#00F3FF] shadow-[0_0_10px_#00F3FF]"></div>
           <div className="absolute top-0 right-0 w-[2px] h-6 bg-[#00F3FF]"></div>
           <div className="absolute bottom-0 left-0 w-10 h-[2px] bg-[#00F3FF] shadow-[0_0_10px_#00F3FF]"></div>
-  <div class="transform skew-x-[12deg] text-white flex justify-center items-center">
-    Click to see more
+  <div class="transform skew-x-[12deg] text-[#00F3FF] tracking-[0.3em] text-xl md:text-[1.5vh] font-bold drop-shadow-[0_0_8px_rgba(0,243,255,0.9)]">
+    CLICK
   </div>
 </div>
 
@@ -124,10 +184,15 @@ const SecondSection = () => {
       {/* --- CENTER MESSAGE CARD --- */}
       <div
         ref={messageRef}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90"
+        className="absolute top-[50vh] left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90"
       >
         <div className="relative md:h-[60vh] h-[53vh] p-8 bg-[#050b14]/85 backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden ">
-          {/* Decorative Corner Lines */}
+
+
+          <div ref={messageRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90">
+        <div className="relative md:h-[60vh] h-[53vh] p-8 bg-[#050b14]/85 backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden">
+          
+          {/* Decorative Lines */}
           <div className="absolute top-0 left-0 w-[2px] h-8 bg-[#00F3FF]"></div>
           <div className="absolute top-0 left-0 w-20 h-[2px] bg-[#00F3FF] shadow-[0_0_10px_#00F3FF]"></div>
           <div className="absolute bottom-0 right-0 w-[2px] h-8 bg-[#00F3FF]"></div>
@@ -143,18 +208,19 @@ const SecondSection = () => {
             </h2>
           </div>
 
-          {/* Message Content */}
-          <div className="text-base md:text-lg leading-relaxed text-gray-300 font-mono space-y-4">
-            <p className="text-white font-bold text-xl md:text-2xl tracking-wide">
-              The journey begins here.
-            </p>
-            <p className="text-[#00F3FF]/90">
-              You have entered the <span className="text-[#FF007A] font-bold">Event Dimension</span>.
-            </p>
-            <p className="text-gray-400 text-sm mt-4">
-              Scroll to explore the unknown...
-            </p>
+          {/* ✅ 7 ANIMATING CARDS - FROM THE BACK */}
+          <div  className="grid grid-cols-2 gap-8 h-[45vh] w-[110%] overflow-y-auto p-4 perspective-[1000px]">
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute left-[8vw] card opacity-0">EVENT 1</div>
           </div>
+        </div>
+      </div>
 
           {/* Animated Accent Bar */}
           {/* <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00F3FF] to-transparent animate-pulse"></div> */}
