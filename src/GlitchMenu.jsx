@@ -30,7 +30,7 @@ const GlitchMenu = ({ onClick, isOpen }) => {
       {/* BUTTON CONTAINER */}
       <button
         onClick={onClick}
-        className="fixed top-8 right-8 z-[1100] group flex flex-col items-end gap-[6px] p-2 cursor-pointer focus:outline-none"
+        className="fixed md:top-8 top-6 md:right-8 right-[1px] z-[1100] group flex flex-col items-end gap-[6px] p-1 cursor-pointer focus:outline-none"
       >
         {/* BAR 1 (Top Bar) */}
         <span

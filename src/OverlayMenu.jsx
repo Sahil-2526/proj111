@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+
 import gsap from "gsap";
 import sideCharacter from "./assets/overlaySideCharacter.png";
 
@@ -9,6 +10,8 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
   const characterRef = useRef(null);
   const notificationRef = useRef(null);
   const notificationInnerRef = useRef(null);
+  const [isFirstPage, setIsFirstPage] = useState(true);
+
   
   const tlRef = useRef(null);
 
@@ -21,8 +24,22 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
     { id: "06", label: "OUR TEAM", link: "/team" },
     { id: "07", label: "CONTACT", link: "/contact" },
   ];
-
+  
   const particles = Array.from({ length: 20 });
+
+// ✅ FIXED: Hide notification on pages 2+
+useEffect(() => {
+  const handleScroll = () => {
+    const scrollTop = window.scrollY;
+    const firstPageEnd = window.innerHeight * 2; // End of Goku + first transition
+    setIsFirstPage(scrollTop < firstPageEnd);
+  };
+  
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Check initial position
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []);
+
 
   // 1. SETUP ANIMATION (Run once)
   useLayoutEffect(() => {
@@ -123,10 +140,12 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
   return (
     <>
       {/* 1. NOTIFICATION */}
-      <div 
-        ref={notificationRef}
-        className="absolute top-80 left-6 md:left-25 z-20 max-w-[85vw] w-[380px] font-sans scale-x-110"
-      >
+      {isFirstPage && (
+  <div 
+    ref={notificationRef}
+    className="absolute top-[70vh] left-[14vw] md:left-25 md:top-80 z-20 max-w-[85vw] w-[380px] font-sans scale-x-110 md:opacity-100%"
+  > 
+
         <div 
           ref={notificationInnerRef}
           className="relative p-6 bg-[#050b14]/85 backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_20px_rgba(0,243,255,0.15)] overflow-hidden"
@@ -146,35 +165,36 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
           </div>
 
           <div className="text-sm md:text-base leading-relaxed text-gray-300 mb-6 font-mono">
-            <p>
-              Your heart will stop in <span className="text-red-500 font-bold animate-pulse text-lg">0.02 seconds</span>
-            </p>
             <p className="mt-2 text-[#00F3FF]/80">
-              if you choose not to accept.
+              GREETINGS
             </p>
-            <p className="mt-4 font-bold text-white text-lg tracking-wide">
+            <p>
+              CLICK HERE TO REGISTER FOR <span className="text-red-500 font-bold animate-pulse text-lg">AHOUBA</span>
+            </p>
+            
+            {/* <p className="mt-4 font-bold text-white text-lg tracking-wide">
               Will you accept?
-            </p>
+            </p> */}
           </div>
 
           <div className="flex gap-4">
             <button className="flex-1 py-3 border border-[#00F3FF] text-[#00F3FF] text-sm hover:bg-[#00F3FF] hover:text-black transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(0,243,255,0.2)] hover:shadow-[0_0_20px_rgba(0,243,255,0.6)]">
-              Yes
+              REGISTER
             </button>
             <button className="flex-1 py-3 border border-red-500 text-red-500 text-sm hover:bg-red-500 hover:text-white transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(239,68,68,0.2)] hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]">
-              No
+              LOGIN
             </button>
           </div>
           <div className="absolute inset-0 z-[-1] opacity-10 pointer-events-none"
              style={{ backgroundImage: "linear-gradient(#00F3FF 1px, transparent 1px), linear-gradient(90deg, #00F3FF 1px, transparent 1px)", backgroundSize: "24px 24px" }}
           ></div>
         </div>
-      </div>
+      </div> )}
 
       {/* 2. CHARACTER */}
       <div
         ref={characterRef}
-        className="fixed bottom-0 left-0 z-30 w-[40vw] md:w-[30vw] h-auto pointer-events-none origin-bottom opacity-0"
+        className="fixed md:bottom-0 left-[-6.5vw] z-300 w-[50vw] md:w-[30vw] bottom-85  h-auto pointer-events-none origin-bottom opacity-0"
       >
         <img 
           src={sideCharacter} 
@@ -186,7 +206,7 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
       {/* MAIN MENU CONTAINER */}
       <div
         ref={containerRef}
-        className="fixed top-0 right-0 h-full w-full z-40 
+        className="fixed top-0 right-0 h-full w-full z-400 
                   bg-gradient-to-r from-[#1A0B2E] via-[#260a2e] to-[#4a0826]
                   translate-x-full shadow-[-10px_0_40px_rgba(255,0,122,0.3)]
                   flex flex-col justify-center items-center overflow-hidden
@@ -226,7 +246,7 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
                 href={item.link}
                 onClick={closeMenu}
                 ref={(el) => (linksRef.current[index] = el)}
-                className="group relative flex items-center gap-6 text-5xl md:text-8xl font-['Orbitron'] font-black uppercase text-transparent 
+                className="group relative flex items-center gap-6 text-4xl md:text-8xl font-['Orbitron'] font-black uppercase text-transparent 
                            transition-all duration-300 ease-out cursor-pointer hover:translate-x-4"
                 style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}
               >

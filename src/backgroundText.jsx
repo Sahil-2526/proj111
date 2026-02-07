@@ -1,21 +1,51 @@
-// src/BackgroundText.jsx
-import React from 'react';
+import React, { useRef, useEffect, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 
 const BackgroundText = () => {
+  const textRef = useRef(null);
+  const containerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // Animate text entrance
+      gsap.fromTo(textRef.current.children, 
+        {
+          opacity: 0,
+          y: 100,
+          rotationX: -90,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          rotationX: 0,
+          duration: 1.5,
+          stagger: 0.1,
+          ease: "power3.out"
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="absolute top-130 left-[35vw] md:left-[75vw] -translate-y-1/2 z-0 pointer-events-none select-none mix-blend-screen ">
-      <div className="flex flex-col gap-4 opacity-40">
-        {/* Main Text */}
-        <h1 
-          className="text-[12vh] md:text-[16vh] font-black leading-none text-transparent bg-clip-text bg-gradient-to-b from-[#FF007A] via-[#00F3FF] to-[#FF007A] drop-shadow-[0_0_20px_rgba(255,0,122,0.5)]"
-          style={{ 
-            writingMode: 'vertical-rl', 
-            fontFamily: "'Orbitron', sans-serif",
-            letterSpacing: '0.1em'
-          }}
-        >
-          AHOUBA
+    <div ref={containerRef} className="absolute inset-0 w-full h-full flex flex-col items-center justify-center pointer-events-none">
+      <div ref={textRef} className="text-center text-white/90">
+        {/* MAIN TITLE */}
+        <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black uppercase tracking-[-0.05em] mb-4 bg-gradient-to-r from-orange-400 via-red-500 to-yellow-500 bg-clip-text text-transparent drop-shadow-2xl">
+          GOKU
         </h1>
+        
+        {/* SUBTITLE */}
+        <div className="text-xl md:text-2xl lg:text-3xl font-light tracking-widest uppercase opacity-80 mb-8">
+          <span className="block">Dragon Ball</span>
+          <span className="block">Super Saiyan</span>
+        </div>
+        
+        {/* POWER LEVEL */}
+        <div className="text-4xl md:text-5xl font-mono font-bold text-yellow-400 tracking-wider drop-shadow-lg animate-pulse">
+          POWER LEVEL: 9000+
+        </div>
       </div>
     </div>
   );

@@ -8,8 +8,8 @@ const Navbar = () => {
   const navItems = [
     { name: "EVENTS", link: "#events" },
     { name: "ABOUT", link: "#about" },
-    { name: "VOLUNTEER", link: "#volunteer" },
-    { name: "TIMELINE", link: "#timeline" },
+    { name: "PEOPLE", link: "#people" },
+    { name: "MONSTER", link: "#timeline" },
   ];
 
   useEffect(() => {
@@ -51,14 +51,14 @@ const Navbar = () => {
         // bg-[#1A0B2E]/90: Deep Purple background (90% opacity)
         // border-b-4 border-[#FF007A]: Thick "Laser Pink" bottom border (Very Promare style)
         // shadow-[...]: Pink glow under the border
-        className="pointer-events-auto w-[75%] h-24 
+        className="pointer-events-auto md:w-[75%] md:h-24 h-20 relative w-[85%]
                    bg-[#1A0B2E]/90 backdrop-blur-md 
                    border-b-4 border-[#FF007A]
                    shadow-[0_4px_30px_rgba(255,0,122,0.4)]
                    [clip-path:polygon(0_0,100%_0,95%_100%,5%_100%)]
                    flex items-center justify-center transition-colors"
       >
-        <ul className="flex flex-row gap-16 list-none m-0 p-0 pb-2">
+        <ul className="flex flex-row md:gap-23 gap-9 list-none m-0 p-0 pb-2">
           {navItems.map((item, index) => (
             <li key={index}>
               <a
@@ -70,7 +70,7 @@ const Navbar = () => {
                 className="text-white text-xl font-['Orbitron'] font-bold tracking-[0.2em] cursor-pointer 
                            block transition-all duration-200 ease-out
                            hover:text-[#F0F600] hover:scale-110 
-                           hover:drop-shadow-[0_0_10px_rgba(240,246,0,0.8)]"
+                           hover:drop-shadow-[0_0_10px_rgba(240,246,0,0.8)] md:text-[1.2vw] text-[1.9vw]"
               >
                 {item.name}
               </a>
