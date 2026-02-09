@@ -12,6 +12,13 @@ const SecondSection = ({father}) => {
   const rightCharacterRef = useRef(null);
   const messageRef = useRef(null);
 
+  const phoneQuery = window.matchMedia("(max-width: 767px)");
+let isPhone = phoneQuery.matches;
+
+phoneQuery.addEventListener("change", (e) => {
+  isPhone = e.matches;
+});
+
   useEffect(() => {
     console.log("🎬 Scroll Timeline STARTED!");
 
@@ -31,7 +38,7 @@ const SecondSection = ({father}) => {
       tl.fromTo(card, 
         {
           z: -500, 
-          x: 0,             // DEEP 3D SPACE
+          x: isPhone? 10: 230,             // DEEP 3D SPACE
                // FLIPPED (back facing)
           opacity: 0,
           scale: 0,
@@ -40,7 +47,7 @@ const SecondSection = ({father}) => {
         },
         {
           z: 0,  
-          x:-140 + 280*(i%2),               // TO FRONT
+          x: isPhone? 5 : 0 + 280*(i%2),               // TO FRONT
                  // FACE FRONT
           opacity: 1,
           scale: 1,
@@ -190,7 +197,7 @@ const SecondSection = ({father}) => {
 
 
           <div ref={messageRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90">
-        <div className="relative md:h-[60vh] h-[53vh] p-8 bg-[#050b14]/85 backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden">
+        <div className="relative md:h-[60vh] top-10 md:top-0 h-[53vh] p-8 bg-[#050b14]/85 backdrop-blur-md border border-[#00F3FF]/40 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden">
           
           {/* Decorative Lines */}
           <div className="absolute top-0 left-0 w-[2px] h-8 bg-[#00F3FF]"></div>
@@ -210,14 +217,14 @@ const SecondSection = ({father}) => {
 
           {/* ✅ 7 ANIMATING CARDS - FROM THE BACK */}
           <div  className="grid grid-cols-2 gap-8 h-[45vh] w-[110%] overflow-y-auto p-4 perspective-[1000px]">
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card bg-[#050b14]/85 h-[45vh] w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
-              <div className="absolute left-[8vw] card opacity-0">EVENT 1</div>
+              <div className="absolute card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute  card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute  card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute  card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute  card bg-[#050b14]/85 md:h-[45vh] h-[40vh] w-[65vw] md:w-[30vw] backdrop-blur-md border border-[#00F3FF]/90 shadow-[0_0_30px_rgba(0,243,255,0.2)] overflow-hidden flex items-center justify-center">EVENT 1</div>
+              <div className="absolute  card opacity-0">EVENT 1</div>
           </div>
         </div>
       </div>

@@ -172,7 +172,10 @@ const SpringSection = () => {
   return (
     <div ref={sectionRef} className="relative w-full h-screen overflow-hidden">
       {/* BASE BACKGROUND */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#fce4ec] via-[#f8bbd0] to-[#f48fb1] -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br 
+from-[#2A0F3D] 
+via-[#4A1459]
+to-[#8E1459] -z-10"></div>
 
       {/* FADE OVERLAY */}
       <div
