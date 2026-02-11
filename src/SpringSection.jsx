@@ -4,32 +4,80 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// --- COMPONENT: TECH RING WITH SPIRIT ORBS ---
+const TechRing = ({ className, color = "#E46A9F", id }) => (
+  <svg 
+    viewBox="0 0 400 400" 
+    className={`${className} opacity-100 mix-blend-screen pointer-events-none`} 
+    style={{ overflow: 'visible' }}
+  >
+    <defs>
+      <radialGradient id={`spiritGradient-${id}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <stop offset="0%" stopColor="white" stopOpacity="1" />
+        <stop offset="40%" stopColor={color} stopOpacity="1" />
+        <stop offset="100%" stopColor={color} stopOpacity="0" />
+      </radialGradient>
+      <filter id={`spiritGlow-${id}`} x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+
+    <circle cx="200" cy="200" r="190" fill="none" stroke={color} strokeWidth="1" strokeDasharray="10 20" opacity="0.6" />
+    <path d="M 200 200 m -140, 0 a 140,140 0 1,0 280,0 a 140,140 0 1,0 -280,0" fill="none" stroke={color} strokeWidth="2" strokeDasharray="50 30 10 30" className="origin-center" opacity="0.9" />
+    <path d="M 200 100 L 286 150 L 286 250 L 200 300 L 114 250 L 114 150 Z" fill="none" stroke={color} strokeWidth="3" opacity="0.5" />
+    
+    <g filter={`url(#spiritGlow-${id})`}>
+      <circle cx="200" cy="10" r="12" fill={`url(#spiritGradient-${id})`} />
+      <circle cx="200" cy="390" r="12" fill={`url(#spiritGradient-${id})`} />
+      <circle cx="10" cy="200" r="12" fill={`url(#spiritGradient-${id})`} />
+      <circle cx="390" cy="200" r="12" fill={`url(#spiritGradient-${id})`} />
+    </g>
+  </svg>
+);
+
 const SpringSection = () => {
   const sectionRef = useRef(null);
   const fadeOverlayRef = useRef(null);
-  const blobsRef = useRef([]);
-  const petalsRef = useRef([]);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const cardRef = useRef(null);
   const decorLineLeftRef = useRef(null);
   const decorLineRightRef = useRef(null);
-
-  // --- PALETTE CONSTANTS (Dusty Neon) ---
-  // Background: #160E1E (Matte Plum)
-  // Panel: #241622 (Sakura Charcoal)
-  // Primary: #E46A9F (Soft Neon Sakura)
-  // Secondary: #9D7BCF (Muted Lavender)
-  // Highlight: #7BCED9 (Calm Cyan)
-  // Text: #F1ECF7
+  const petalsRef = useRef([]);
+  
+  const leftRingRef = useRef(null);
+  const rightRingRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. FADE TRANSITION
-      gsap.fromTo(
-        fadeOverlayRef.current,
-        { opacity: 1 },
-        {
+      // 1. DIGITAL CHERRY BLOSSOM ANIMATION
+      petalsRef.current.forEach((petal) => {
+        gsap.set(petal, {
+          x: gsap.utils.random(0, window.innerWidth),
+          y: -50,
+          rotation: gsap.utils.random(0, 360),
+          opacity: gsap.utils.random(0.4, 0.8),
+          scale: gsap.utils.random(0.5, 1.2)
+        });
+
+        gsap.to(petal, {
+          y: window.innerHeight + 100,
+          x: "+=100",
+          rotation: 360,
+          duration: gsap.utils.random(8, 15),
+          repeat: -1,
+          ease: "none",
+          delay: gsap.utils.random(0, 10)
+        });
+      });
+
+      // 2. TECH RING ROTATION
+      gsap.to(leftRingRef.current, { rotation: -360, duration: 40, repeat: -1, ease: "none" });
+      gsap.to(rightRingRef.current, { rotation: 360, duration: 50, repeat: -1, ease: "none" });
+
+      // 3. ENTRANCE & FADE
+      gsap.fromTo(fadeOverlayRef.current, { opacity: 1 }, {
           opacity: 0,
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -37,46 +85,8 @@ const SpringSection = () => {
             end: "top 20%",
             scrub: 1,
           },
-        }
-      );
-
-      // 2. BLOBS (Slower, subtle movement)
-      blobsRef.current.forEach((blob, index) => {
-        gsap.to(blob, {
-          scale: 1.1,
-          x: "+=20",
-          y: "-=20",
-          duration: 8,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: index * 1.5,
-        });
       });
 
-      // 3. PETALS (Soft Pink #E46A9F, No Glow)
-      petalsRef.current.forEach((petal, index) => {
-        gsap.set(petal, {
-          x: gsap.utils.random(0, window.innerWidth),
-          y: -50,
-          rotation: gsap.utils.random(0, 360),
-          scale: gsap.utils.random(0.5, 1.2),
-          opacity: gsap.utils.random(0.4, 0.9),
-        });
-
-        gsap.to(petal, {
-          y: window.innerHeight + 100,
-          x: "+=80",
-          rotation: 360,
-          duration: gsap.utils.random(5, 10), // Slower fall for "calm" feel
-          ease: "none",
-          repeat: -1,
-          delay: gsap.utils.random(0, 5),
-          overwrite: true,
-        });
-      });
-
-      // 4. UI ENTRANCE ANIMATIONS
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -85,39 +95,10 @@ const SpringSection = () => {
         },
       });
 
-      // Decor Lines
-      tl.fromTo(
-        [decorLineLeftRef.current, decorLineRightRef.current],
-        { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 1, duration: 1, ease: "power3.out" }
-      );
-
-      // Title
-      tl.fromTo(
-        titleRef.current,
-        { y: 30, opacity: 0, filter: "blur(10px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" },
-        "-=0.8"
-      );
-
-      // Subtitle
-      tl.fromTo(
-        subtitleRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
-        "-=0.6"
-      );
-
-      // Card (Panel)
-      tl.fromTo(
-        cardRef.current,
-        { y: 50, opacity: 0, scale: 0.95 },
-        { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: "back.out(1.2)" },
-        "-=0.8"
-      );
-
-      // Removed the infinite pulsing glow animation to strictly follow "Static glow = fatigue" rule.
-      // The card now relies on its border and backdrop filter for presence.
+      tl.fromTo([decorLineLeftRef.current, decorLineRightRef.current], { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1, ease: "power3.out" });
+      tl.fromTo(titleRef.current, { y: 30, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, ease: "power2.out" }, "-=0.8");
+      tl.fromTo(subtitleRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.6");
+      tl.fromTo(cardRef.current, { y: 50, opacity: 0, scale: 0.95 }, { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: "back.out(1.2)" }, "-=0.8");
 
     }, sectionRef);
 
@@ -127,132 +108,77 @@ const SpringSection = () => {
   return (
     <div ref={sectionRef} className="relative w-full h-screen overflow-hidden bg-[#160E1E]">
       
-      {/* 1. MATTE BACKGROUND BASE */}
-      <div className="absolute inset-0 bg-[#160E1E] -z-20"></div>
-
-      {/* 2. ATMOSPHERE (Dusty/Muted Blobs) */}
+      {/* 1. ATMOSPHERIC CIRCLE GRADIENTS (Restored) */}
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
         {/* Secondary Accent (Lavender) */}
-        <div
-          ref={(el) => (blobsRef.current[0] = el)}
-          className="absolute top-[10%] left-[10%] w-[500px] h-[500px] rounded-full bg-[#9D7BCF] blur-[120px] mix-blend-screen"
-        ></div>
-        {/* Primary Accent (Sakura) - darker/dusty */}
-        <div
-          ref={(el) => (blobsRef.current[1] = el)}
-          className="absolute bottom-[20%] right-[5%] w-[400px] h-[400px] rounded-full bg-[#E46A9F] blur-[100px] opacity-60 mix-blend-screen"
-        ></div>
-        {/* Highlight (Cyan) - very faint */}
-        <div
-          ref={(el) => (blobsRef.current[2] = el)}
-          className="absolute top-[40%] left-[40%] w-[300px] h-[300px] rounded-full bg-[#7BCED9] blur-[90px] opacity-30 mix-blend-screen"
-        ></div>
+        <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] rounded-full bg-[#9D7BCF] blur-[120px] mix-blend-screen"></div>
+        {/* Primary Accent (Sakura) */}
+        <div className="absolute bottom-[20%] right-[5%] w-[400px] h-[400px] rounded-full bg-[#E46A9F] blur-[100px] opacity-60 mix-blend-screen"></div>
       </div>
 
-      {/* 3. PETALS (Flat color, no shadow) */}
+      {/* 2. DIGITAL CHERRY BLOSSOM PETALS */}
       <div className="absolute inset-0 z-5 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+        {[...Array(20)].map((_, i) => (
           <div
             key={i}
             ref={(el) => (petalsRef.current[i] = el)}
-            // Changed color to #E46A9F, Removed shadow for flat/matte look
-            className="absolute top-0 left-0 w-3 h-3 bg-[#E46A9F] opacity-0 pointer-events-none"
+            className="absolute top-0 left-0 w-3 h-3 bg-[#E46A9F] opacity-0"
             style={{
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)", // Diamond/Petal shape
             }}
           />
         ))}
       </div>
 
-      {/* 4. CONTENT */}
-      <div className="relative z-20 flex flex-col items-center justify-center h-full px-8 text-center">
+      {/* --- RINGS --- */}
+      <div className="absolute left-[-10%] md:left-[5%] top-1/2 -translate-y-1/2 h-[55vh] w-[55vh] z-10 hidden md:block opacity-60">
+         <div ref={leftRingRef} className="w-full h-full">
+            <TechRing className="w-full h-full" color="#7BCED9" id="left" />
+         </div>
+      </div>
+
+      <div className="absolute right-[-10%] md:right-[5%] top-1/2 -translate-y-1/2 h-[55vh] w-[55vh] z-10 hidden md:block opacity-60">
+         <div ref={rightRingRef} className="w-full h-full">
+            <TechRing className="w-full h-full" color="#E46A9F" id="right" />
+         </div>
+      </div>
+
+      {/* --- CONTENT --- */}
+      <div className="relative z-20 flex flex-col items-center justify-between md:justify-center w-full h-full px-6 md:px-8 text-center pt-24 pb-10 md:pt-0 md:pb-0 gap-6">
         
-        {/* Decorative Header Lines */}
-     
+        <div className="shrink-0 flex flex-col items-center w-full">
+          <h1 ref={titleRef} className="text-5xl md:text-8xl font-['Orbitron'] font-bold mb-4 md:mb-6 opacity-0 tracking-tight" style={{ color: "#F1ECF7", textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
+            ABOUT <span className="text-[#E46A9F] font-['Orbitron'] font-bold"> AHOUBA</span>
+          </h1>
 
-        {/* Title */}
-        <h1
-          ref={titleRef}
-          className="text-6xl md:text-8xl font-bold mb-6 opacity-0 tracking-tight"
-          style={{
-            color: "#F1ECF7",
-            // Subtle text shadow, tight and dark, just for legibility
-            textShadow: "0 4px 12px rgba(0,0,0,0.3)", 
-          }}
-        >
-          ABOUT <span className="text-[#E46A9F] font-light"> AHOUBA</span>
-        </h1>
+          <div className="flex items-center gap-4 md:gap-6 mb-4 md:mb-8">
+            <div ref={decorLineLeftRef} className="w-16 md:w-24 h-[1px] bg-gradient-to-r from-transparent to-[#E46A9F] origin-left opacity-0"></div>
+            <div className="w-2.5 h-2.5 rotate-45 border border-[#E46A9F] bg-[#160E1E]"></div>
+            <div ref={decorLineRightRef} className="w-16 md:w-24 h-[1px] bg-gradient-to-l from-transparent to-[#E46A9F] origin-right opacity-0"></div>
+          </div>
 
-          <div className="flex items-center gap-6 mb-8">
-          <div
-            ref={decorLineLeftRef}
-            className="w-24 h-[1px] bg-gradient-to-r from-transparent to-[#E46A9F] origin-left opacity-0"
-          ></div>
-          {/* Diamond instead of glowy circle */}
-          <div className="w-2 h-2 rotate-45 border border-[#E46A9F] bg-[#160E1E]"></div>
-          <div
-            ref={decorLineRightRef}
-            className="w-24 h-[1px] bg-gradient-to-l from-transparent to-[#E46A9F] origin-right opacity-0"
-          ></div>
+          <p ref={subtitleRef} className="text-base md:text-2xl text-[#9D7BCF] max-w-2xl font-['Orbitron'] tracking-wide opacity-0 px-2 leading-relaxed">
+            The Annual Fest of <span className="text-[#7BCED9]">IIIT Senapati, Manipur </span>
+          </p>
         </div>
-        {/* Subtitle */}
-        <p
-          ref={subtitleRef}
-          className="text-xl md:text-2xl text-[#9D7BCF] mb-16 max-w-2xl font-light tracking-wide opacity-0"
-        >
-          The Annual Fest of <span className="text-[#7BCED9]">IIIT Senapati, Manipur </span>
-        </p>
 
-        {/* Card (The Sakura Charcoal Panel) */}
-        <div
-          ref={cardRef}
-          // Bg: Sakura Charcoal (#241622) with opacity
-          // Border: 1px solid rgba(228, 106, 159, 0.25)
-          // Blur: backdrop-blur-xl (Heavy blur, low shine)
-          className="relative p-10 bg-[#241622]/80 backdrop-blur-xl rounded-xl border border-[#E46A9F]/25 max-w-2xl opacity-0 group transition-all duration-500"
-          style={{
-            // No static box-shadow. 
-          }}
-        >
-          {/* Interaction Glow: Only on Hover */}
-          <div className="absolute inset-0 rounded-xl transition-all duration-500 opacity-0 group-hover:opacity-100 pointer-events-none"
-               style={{
-                 boxShadow: "0 0 20px rgba(228, 106, 159, 0.15)", // Very subtle glow on hover
-                 border: "1px solid rgba(228, 106, 159, 0.5)"
-               }}
-          ></div>
+        <div ref={cardRef} className="relative w-full max-w-2xl bg-[#241622]/80 backdrop-blur-xl rounded-xl border border-[#E46A9F]/25 opacity-0 group transition-all duration-500 
+                                     p-6 md:p-10 flex flex-col justify-center flex-grow md:flex-grow-0 md:h-auto overflow-y-auto no-scrollbar">
+          
+          <div className="absolute inset-0 rounded-xl transition-all duration-500 opacity-0 group-hover:opacity-100 pointer-events-none" style={{ boxShadow: "0 0 20px rgba(228, 106, 159, 0.15)", border: "1px solid rgba(228, 106, 159, 0.5)" }}></div>
+          <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-[#7BCED9]/50 rounded-tl-md"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-[#7BCED9]/50 rounded-br-md"></div>
 
-          {/* Corner Accents (Cyan #7BCED9) */}
-          <div className="absolute top-0 left-0 w-6 h-6 border-l border-t border-[#7BCED9]/50 rounded-tl-md"></div>
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-r border-b border-[#7BCED9]/50 rounded-br-md"></div>
-
-          <p className="text-lg md:text-xl text-[#F1ECF7]/90 leading-relaxed font-light text-justify">
-            <span className="text-[#E46A9F]">Ahouba</span> is the annual technical fest of <span className="text-[#E46A9F]">IIIT Manipur. </span>
-  It is organized by the students of the institute.
-The fest features a range of technical events and competitions.
-Coding contests, quizzes, and problem-solving challenges are part of the lineup.
-Workshops and talks are conducted during the fest.
-Students from different colleges are invited to participate.
-Both team-based and individual events are organized.
-Ahouba offers participants a chance to test their skills in a competitive setting.
-The fest also includes a few informal and fun events.
-It provides space for interaction and collaboration among students.
-Events are designed to be accessible to participants with different skill levels.
-The fest encourages practical learning through hands-on activities.
-Ahouba is held annually at the IIIT Manipur campus.
-It is one of the key student-led events of the institute.
-Overall, Ahouba offers a balanced mix of competition, learning, and engagement.
-            <span className="text-[#E46A9F]"></span>
+          <p className="text-base sm:text-lg md:text-xl text-[#F1ECF7]/90 leading-relaxed font-['Orbitron'] text-justify">
+            <span className="text-[#E46A9F]">Ahouba</span> is the annual technical fest of <span className="text-[#E46A9F]"> IIIT Manipur</span>, organized by its students. 
+            The fest features technical competitions such as coding contests, quizzes, and problem-solving challenges, along with workshops and talks. 
+            Students from various colleges participate in both team and individual events. 
+            Designed for different skill levels, Ahouba promotes practical, hands-on learning while encouraging engagement.
           </p>
         </div>
       </div>
 
-      {/* FADE OVERLAY (Transition helper) */}
-      <div
-        ref={fadeOverlayRef}
-        className="absolute inset-0 bg-[#160E1E] z-50 pointer-events-none"
-      ></div>
-
+      <div ref={fadeOverlayRef} className="absolute inset-0 bg-[#160E1E] z-50 pointer-events-none"></div>
     </div>
   );
 };

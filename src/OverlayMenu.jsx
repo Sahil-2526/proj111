@@ -133,7 +133,7 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
     }, notificationRef);
 
     return () => ctx.revert();
-  }, [isExpanded]);
+  }, [isExpanded,isFirstPage]);
 
   // --- MENU ANIMATION ---
   useLayoutEffect(() => {
