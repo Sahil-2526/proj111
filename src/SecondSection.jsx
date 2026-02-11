@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gndm from "./assets/gndm.png";
-import eva from "./assets/eva.png";
+import eva from "./assets/wintertree.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -104,8 +104,22 @@ const SecondSection = () => {
       </div>
 
       {/* Characters Layer */}
-      <div className="absolute top-0 left-0 h-[200vh] w-[45vw] md:w-[25vw] z-20 pointer-events-none">
-        <img src={eva} alt="Eva" className="w-full md:h-full relative top-10 object-contain object-left-top drop-shadow-[0_0_40px_rgba(0,243,255,0.4)]" />
+      <div   className="
+    absolute
+    opacity-[0.35]
+    
+    w-[100vw]
+    
+    z-20
+    pointer-events-none
+    drop-shadow-[0_0_25px_rgba(180,240,255,0.6)]
+  "
+>
+  <img
+    src={eva}
+    alt="Snowman"
+    className="w-full h-auto object-contain"
+  />" <div/>
       </div>
 
       <div className="absolute top-0 md:right-[-18vh] right-[-8vh] h-[100vh] w-[75vw] md:w-[45vw] z-20 pointer-events-none">
