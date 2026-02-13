@@ -1,3 +1,6 @@
+/* ADD THIS IMPORT AT THE TOP */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;900&display=swap');
+
 .manga-gate {
   position: relative;
   width: 100vw;
@@ -44,36 +47,47 @@
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: grayscale(0.8) contrast(1.2);
-  transition: filter 0.5s ease, transform 0.8s ease;
+  filter: grayscale(1) contrast(1.2) brightness(0.7);
+  transition: filter 0.5s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.manga-panel:hover .panel-image {
-  filter: grayscale(0) contrast(1);
-  transform: scale(1.1);
-}
-
-/* Replace these URLs with your actual local assets */
+/* Image Assignments */
 .anime-bg {
-  background-image: url('path-to-your-3d-anime-cover.jpg');
+  background-image: url('../assets/anime-cover.webp'); 
 }
 
 .manga-bg {
-  background-image: url('path-to-your-2d-manga-cover.jpg');
+  background-image: url('../assets/manga-cover.webp');
 }
 
-/* Tint Overlays */
+/* Hover Effects */
+.manga-panel:hover .panel-image {
+  filter: grayscale(0) contrast(1) brightness(1);
+  transform: scale(1.1);
+}
+
+/* Overlays */
 .panel-overlay {
   position: absolute;
   inset: 0;
-  opacity: 0.6;
   mix-blend-mode: multiply;
+  opacity: 0.7;
+  transition: opacity 0.5s ease;
 }
 
-.blue-tint { background: #0d47a1; } /* Matches 3D theme */
-.orange-tint { background: #ff6b35; } /* Matches 2D theme */
+.manga-panel:hover .panel-overlay {
+  opacity: 0.3; 
+}
 
-/* Content Styling */
+.blue-tint { 
+  background: linear-gradient(135deg, #0d47a1, #2196f3); 
+}
+
+.orange-tint { 
+  background: linear-gradient(135deg, #ff6b35, #f7931e); 
+}
+
+/* Panel Content Shadows */
 .panel-content {
   position: absolute;
   bottom: 15%;
@@ -84,15 +98,15 @@
 }
 
 .panel-text {
-  font-family: 'Bangers', cursive;
-  font-size: 6rem;
+  font-family: 'Bangers', cursive; /* Now this will work */
+  font-size: 7rem;
   color: #fff;
-  text-shadow: 8px 8px 0px #000;
+  text-shadow: 10px 10px 0px #000;
   letter-spacing: 5px;
 }
 
 .sub-text {
-  font-family: 'Rubik', sans-serif;
+  font-family: 'Rubik', sans-serif; /* Now this will work */
   font-weight: 900;
   background: #fff;
   color: #000;
@@ -163,63 +177,4 @@
   font-weight: 900;
   font-size: 0.8rem;
   color: #000;
-}
-
-/* Gatekeeper.css */
-
-/* ... (Keep your previous gate-container and choice-stage styles) */
-
-.panel-image {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  /* Start with a "Dormant" manga look (grayscale) */
-  filter: grayscale(1) contrast(1.2) brightness(0.7);
-  transition: filter 0.5s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Image Assignments - UPDATE THESE PATHS */
-.anime-bg {
-  background-image: url('../assets/anime-cover.webp'); 
-}
-
-.manga-bg {
-  background-image: url('../assets/manga-cover.webp');
-}
-
-/* Hover Effects: Image "comes to life" */
-.manga-panel:hover .panel-image {
-  filter: grayscale(0) contrast(1) brightness(1);
-  transform: scale(1.1); /* Zoom effect like an anime cutscene */
-}
-
-/* Overlays to make text readable */
-.panel-overlay {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: multiply;
-  opacity: 0.7;
-  transition: opacity 0.5s ease;
-}
-
-.manga-panel:hover .panel-overlay {
-  opacity: 0.3; /* Fade out overlay on hover to show the art */
-}
-
-.blue-tint { 
-  background: linear-gradient(135deg, #0d47a1, #2196f3); 
-}
-
-.orange-tint { 
-  background: linear-gradient(135deg, #ff6b35, #f7931e); 
-}
-
-/* Panel Content Shadows */
-.panel-text {
-  font-family: 'Bangers', cursive;
-  font-size: 7rem;
-  color: #fff;
-  text-shadow: 10px 10px 0px #000;
-  letter-spacing: 5px;
 }
