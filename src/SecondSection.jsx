@@ -37,7 +37,7 @@ const SecondSection = () => {
         });
       });
 
-      // 2. CARDS ANIMATION (Same logic as requested)
+      // 2. CARDS ANIMATION
       const cards = gsap.utils.toArray(".card", containerRef.current);
       mm.add({
         isMobile: "(max-width: 767px)",
@@ -86,7 +86,6 @@ const SecondSection = () => {
   return (
     <div ref={sectionRef} className="relative w-full h-full overflow-hidden">
       {/* --- WINTER BACKGROUND --- */}
-      {/* Frosty deep blue gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#020c1b] via-[#0b1b33] to-[#1e3a5f] -z-10" />
       
       {/* Ambient Winter Fog */}
@@ -103,33 +102,38 @@ const SecondSection = () => {
         ))}
       </div>
 
-      {/* Characters Layer */}
-      <div   className="
-    absolute
-    opacity-[0.35]
-    
-    w-[100vw]
-    
-    z-20
-    pointer-events-none
-    drop-shadow-[0_0_25px_rgba(180,240,255,0.6)]
-  "
->
-  <img
-    src={eva}
-    alt="Snowman"
-    className="w-full h-auto object-contain"
-  />" <div/>
+      {/* --- CHARACTERS LAYER --- */}
+      
+      {/* 1. EVA / WINTER TREE (Bottom on Mobile, Top on Laptop) */}
+      <div className="
+        absolute 
+        left-0 
+        w-[100vw] 
+        z-20 
+        pointer-events-none 
+        opacity-[0.35] 
+        drop-shadow-[0_0_25px_rgba(180,240,255,0.6)]
+        bottom-0          
+        md:top-0          
+        md:bottom-auto    
+      ">
+        <img
+          src={eva}
+          alt="Snowman Tree"
+          className="w-full h-auto object-contain"
+        />
       </div>
 
+      {/* 2. GUNDAM */}
       <div className="absolute top-0 md:right-[-18vh] right-[-8vh] h-[100vh] w-[75vw] md:w-[45vw] z-20 pointer-events-none">
         <img src={gndm} alt="Gundam" className="w-[100vw] h-full object-contain object-right-bottom relative drop-shadow-[0_0_40px_rgba(0,243,255,0.6)]" />
       </div>
 
-      {/* --- UI Container --- */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90">
+      {/* --- UI Container (Shifted UP for Mobile) --- */}
+      {/* top-[40%] moves it up on phones. md:top-1/2 keeps it centered on laptop. */}
+      <div className="absolute top-[45%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 max-w-[90vw] md:w-[50vw] w-[80vw] h-[60vh] opacity-90">
         
-        {/* Decorative Lines - Frosty White/Blue */}
+        {/* Decorative Lines */}
         <div className="absolute inset-0 pointer-events-none z-50">
           <div className="absolute top-0 left-0 w-[2px] h-8 bg-[#e0f7fa] shadow-[0_0_10px_#fff]" />
           <div className="absolute top-0 left-0 w-20 h-[2px] bg-[#e0f7fa] shadow-[0_0_10px_#fff]" />
@@ -143,7 +147,7 @@ const SecondSection = () => {
           className="relative h-full w-full p-8 bg-[#0b1b33]/70 backdrop-blur-xl border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.1)] overflow-y-auto overflow-x-hidden pointer-events-auto no-scrollbar rounded-sm"
         >
           
-          {/* Sticky Header - Ice blue text */}
+          {/* Sticky Header */}
           <div className="sticky top-0 z-[60] pb-4 mb-2 border-b border-white/10 w-full flex justify-center bg-[#0b1b33]/80 backdrop-blur-xl">
               <h2 className="text-[#e0f7fa] tracking-[0.4em] text-xl md:text-2xl font-bold drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] uppercase">EVENTS</h2>
           </div>
