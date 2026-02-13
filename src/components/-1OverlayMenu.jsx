@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
-// FIX: Changed ./assets to ../assets
 import sideCharacter from "../assets/overlaySideCharacter.png";
 
 const OverlayMenu = ({ isOpen, closeMenu }) => {
@@ -12,12 +11,14 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
   // Notification Refs
   const notificationRef = useRef(null); 
   const notificationBoxRef = useRef(null);
-  const toggleBtnRef = useRef(null);
+  const toggleBtnRef = useRef(null); // ✅ NEW REF for the button
   
   const [isFirstPage, setIsFirstPage] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
   
   const tlRef = useRef(null); 
+
+ 
 
   const menuLinks = [
     { id: "01", label: "HOME", link: "/" },
@@ -52,6 +53,8 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
 
       if (isExpanded) {
         // --- OPEN SEQUENCE ---
+        
+        // 1. Expand Box
         tl.to(notificationBoxRef.current, {
           width: 380, 
           height: "auto", 
@@ -62,19 +65,24 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
           duration: 0.6,
           ease: "back.out(1.2)"
         })
+        
+        // 2. Move Button to Top-Left (Padding position)
         .to(toggleBtnRef.current, {
-            top: "24px",
-            left: "24px",
-            xPercent: 0,
-            yPercent: 0,
+            top: "24px",   // Matches p-6 (24px)
+            left: "24px",  // Matches p-6 (24px)
+            xPercent: 0,   // Reset centering
+            yPercent: 0,   // Reset centering
             duration: 0.5,
             ease: "power2.inOut"
         }, "<")
+
+        // 3. Scanline
         .fromTo(".scanline", 
           { top: "-10%", opacity: 1 },
           { top: "110%", opacity: 0, duration: 0.5, ease: "power1.in" },
           "-=0.4"
         )
+        // 4. Content
         .to(".content-wrapper", {
           opacity: 1,
           visibility: "visible",
@@ -94,10 +102,14 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
 
       } else {
         // --- CLOSE SEQUENCE ---
+        
+        // 1. Hide Content
         tl.to([".content-wrapper", ".decorations"], {
           opacity: 0,
           duration: 0.2
         })
+        
+        // 2. Shrink Box
         .to(notificationBoxRef.current, {
           width: 50, 
           height: 50,
@@ -108,6 +120,9 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
           duration: 0.4,
           ease: "power3.inOut"
         }, "<")
+        
+        // 3. Move Button to Dead Center
+        // We use top/left 50% + x/yPercent -50% for perfect centering regardless of size
         .to(toggleBtnRef.current, {
             top: "50%",
             left: "50%",
@@ -208,10 +223,10 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
 
   return (
     <>
-      {isFirstPage && (
+ {isFirstPage && (
         <div 
           ref={notificationRef}
-          className="absolute top-[70vh] left-[6vw] md:left-[6vw]  md:left-25 md:top-90 z-20 font-sans scale-x-110 md:opacity-100"
+          className="absolute top-[70vh] left-[6vw] md:left-[6vw] md:left-25 md:top-90 z-20 font-sans scale-x-110 md:opacity-100"
         >
           <div 
             ref={notificationBoxRef} 
@@ -229,18 +244,23 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
               ></div>
             </div>
 
-            <div className="relative p-6 flex flex-col w-full h-full">
-              <div className="flex items-center w-full">
+            {/* REMOVED h-[25vh] - Let height auto-adjust based on content */}
+            <div className="relative p-6 flex flex-col w-full h-full justify-between">
+              
+              {/* Header Row: Button + Title */}
+              <div className="flex items-center w-full min-h-[32px]">
+                
                 <div 
                   ref={toggleBtnRef}
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="absolute flex items-center justify-center w-[30px] h-[30px] md:w-8 md:h-8 rounded-full border border-[#00F3FF] text-[#00F3FF] shadow-[0_0_10px_rgba(0,243,255,0.4)] cursor-pointer hover:bg-[#00F3FF] hover:text-black transition-colors duration-300 z-[60] bg-black/40"
-                  style={{ top: "24px", left: "24px" }}
+                  style={{ top: "24px", left: "24px" }} 
                 >
                   <span className="text-lg font-bold select-none leading-none pt-[1px]">!</span>
                 </div>
 
-                <div className="content-wrapper opacity-0 invisible w-full overflow-hidden ml-12">
+                {/* REMOVED h-[7vh] - Center text vertically with the icon */}
+                <div className="content-wrapper opacity-0 invisible w-full overflow-hidden ml-12 mt-1">
                     <div className="title-text border-b border-[#00F3FF]/20 pb-2 w-full">
                         <h2 className="text-[#00F3FF] tracking-[0.2em] text-lg font-bold drop-shadow-[0_0_5px_rgba(0,243,255,0.8)] whitespace-nowrap">
                         NOTIFICATION
@@ -249,21 +269,25 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
                 </div>
               </div>
 
-              <div className="content-wrapper opacity-0 invisible mt-4 overflow-hidden w-full">
+              {/* Body Text */}
+              <div className="content-wrapper opacity-0 invisible mt-4 overflow-hidden w-full flex-grow">
                 <div className="text-sm md:text-base leading-relaxed text-gray-300 mb-6 font-mono">
-                    <p className="stagger-item mt-2 text-[#00F3FF]/80 animate-pulse">
+                    <p className="stagger-item text-[#00F3FF]/80 animate-pulse">
                     GREETINGS
                     </p>
-                    <p className="stagger-item mt-2">
+                    {/* REMOVED mt-20 - Replaced with standard mt-4 for proper spacing */}
+                    <p className="stagger-item mt-4">
                     CLICK HERE TO REGISTER FOR <span className="text-red-500 font-bold text-lg">AHOUBA</span>
                     </p>
                 </div>
 
-                <div className="flex gap-4">
-                    <button className="stagger-item flex-1 py-3 border border-[#00F3FF] text-[#00F3FF] text-sm hover:bg-[#00F3FF] hover:text-black transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(0,243,255,0.2)] hover:shadow-[0_0_20px_rgba(0,243,255,0.6)]">
+                {/* Buttons Array */}
+                <div className="flex gap-4 w-full">
+                    {/* REMOVED h-[5vh] - Let py-3 control the height uniformly */}
+                    <button className="stagger-item flex-1 py-3 flex items-center justify-center border border-[#00F3FF] text-[#00F3FF] text-sm hover:bg-[#00F3FF] hover:text-black transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(0,243,255,0.2)] hover:shadow-[0_0_20px_rgba(0,243,255,0.6)]">
                     REGISTER
                     </button>
-                    <button className="stagger-item flex-1 py-3 border border-red-500 text-red-500 text-sm hover:bg-red-500 hover:text-white transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(239,68,68,0.2)] hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]">
+                    <button className="stagger-item flex-1 py-3 flex items-center justify-center border border-red-500 text-red-500 text-sm hover:bg-red-500 hover:text-white transition-all duration-300 uppercase tracking-widest font-bold shadow-[0_0_10px_rgba(239,68,68,0.2)] hover:shadow-[0_0_20px_rgba(239,68,68,0.6)]">
                     LOGIN
                     </button>
                 </div>
@@ -274,6 +298,7 @@ const OverlayMenu = ({ isOpen, closeMenu }) => {
         </div> 
       )}
 
+      {/* CHARACTER & MENU (Unchanged) */}
       <div
         ref={characterRef}
         className="fixed md:bottom-0 left-[-6.5vw] z-300 w-[50vw] md:w-[30vw] bottom-85 h-auto pointer-events-none origin-bottom opacity-0"

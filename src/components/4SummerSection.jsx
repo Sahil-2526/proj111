@@ -259,7 +259,7 @@ const SummerSection = () => {
             <div className="absolute -top-20 -right-20 w-80 h-80 bg-orange-400/20 rounded-full blur-[100px] pointer-events-none"></div>
 
             {/* --- IMAGE CONTAINER --- */}
-            <div className="absolute top-4 right-4 md:top-10 md:right-10 w-24 h-24 md:w-64 md:h-64 rounded-full border-2 border-orange-500/20 shadow-lg overflow-hidden z-20 pointer-events-none">
+            <div className="absolute top-4 right-4 md:top-10 md:right-10 w-36 h-36 md:w-42 md:h-42 rounded-full border-2 border-orange-500/20 shadow-lg overflow-hidden z-20 pointer-events-none">
                 <img 
                     src={data[activeIndex].img} 
                     alt={data[activeIndex].title} 
