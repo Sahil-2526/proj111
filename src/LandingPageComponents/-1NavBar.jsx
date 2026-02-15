@@ -61,7 +61,7 @@ const Navbar = ({ toggleMenu }) => {
                    [clip-path:polygon(0_0,100%_0,95%_100%,5%_100%)]
                    flex items-center justify-center transition-colors"
       >
-        <ul className="flex flex-row md:gap-23 gap-9 list-none m-0 p-0 pb-2">
+        <ul className="flex flex-row md:gap-[7vw] gap-4 list-none m-0 p-0 pb-2">
           {navItems.map((item, index) => (
             <li key={index}>
               <a
