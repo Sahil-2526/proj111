@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './NewPagesComponent/Navbar.jsx'; // Ensure the filename matches your Navbar file
-import backgroundImage from './assets/black_clover.svg'; 
+import backgroundImage from './assets/black_clover.webp'; 
 
 function App() {
   const containerStyle = {
