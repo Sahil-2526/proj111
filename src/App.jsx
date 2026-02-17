@@ -1,49 +1,76 @@
 import React, { useState, useRef, useCallback, memo, useEffect } from 'react';
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // --- EXTERNAL COMPONENTS ---
-import Navbar from './LandingPageComponents/-1NavBar';
-import GlitchMenu from './LandingPageComponents/-1GlitchMenu';
-import OverlayMenu from './LandingPageComponents/-1OverlayMenu';
-import SpringSection from './LandingPageComponents/2SpringSection.jsx';
-import SummerSection from './LandingPageComponents/4SummerSection.jsx'; 
-import AutumnSection from './LandingPageComponents/5AutumnSection.jsx';
-import SecondSection from './LandingPageComponents/3WinterSection.jsx';
-import FracturedParallelogramTransition from './LandingPageComponents/-1PageTransition.jsx'; 
 import Gatekeeper from './LandingPageComponents/0Gatekeeper.jsx';
-import GokuPage, { SideTypography } from './LandingPageComponents/1GokuPage.jsx';
-import AnimatedWaveFooter from './LandingPageComponents/6Footer.jsx'; 
-import EventPage from './OtherPages/EventPage.jsx';
 
-gsap.registerPlugin(ScrollTrigger);
+// --- COMING SOON VIEW ---
+const ComingSoonSection = () => {
+  const containerRef = useRef(null);
+  const textRef = useRef(null);
 
-// --- HELPER COMPONENTS ---
-const fixedPageStyle = {
-  position: 'fixed', inset: 0, width: '100%', height: '100vh',
-  willChange: 'opacity, transform', transform: 'translateZ(0)', backfaceVisibility: 'hidden',
+  useEffect(() => {
+    const tl = gsap.timeline();
+    tl.fromTo(textRef.current, 
+      { filter: "blur(20px)", opacity: 0, scale: 0.8 },
+      { filter: "blur(0px)", opacity: 1, scale: 1, duration: 1.5, ease: "power4.out" }
+    );
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative min-h-screen bg-[#05070a] flex flex-col items-center justify-center overflow-hidden">
+      
+      {/* Background Anime VFX */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute inset-0 opacity-20" 
+             style={{ backgroundImage: `radial-gradient(circle, #fff 1px, transparent 1px)`, backgroundSize: '50px 50px' }} />
+      </div>
+
+      {/* Main Content */}
+      <div ref={textRef} className="relative z-10 text-center px-4">
+        <div className="inline-block px-4 py-1 mb-6 border border-cyan-500/30 bg-cyan-500/5 backdrop-blur-md rounded-full">
+          <span className="text-[10px] font-black tracking-[0.5em] uppercase text-cyan-400">Classified Transmission</span>
+        </div>
+
+        <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase leading-none">
+          AHOUBA <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+            PROJECT
+          </span>
+        </h1>
+
+        <div className="mt-12 flex flex-col items-center gap-4">
+          <p className="text-gray-500 uppercase tracking-[0.3em] text-sm">Initiating Launch On</p>
+          <div className="relative group">
+            <div className="absolute -inset-2 bg-cyan-500 blur-xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <h2 className="relative text-5xl md:text-7xl font-black text-white italic">
+              FEBRUARY <span className="text-cyan-500">30</span>
+            </h2>
+          </div>
+          <p className="text-gray-600 font-mono text-xs mt-4 uppercase tracking-widest italic opacity-80">
+            Ahouba is Incoming
+          </p>
+          <p className="text-gray-800 font-mono text-[10px] mt-2">ERROR: DATE_PARADOX_DETECTED // 2026</p>
+        </div>
+      </div>
+
+      {/* Scanning Line */}
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-500/30 shadow-[0_0_15px_cyan] animate-[scan_4s_linear_infinite]" />
+      
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes scan {
+          0% { top: 0% }
+          100% { top: 100% }
+        }
+      `}} />
+    </div>
+  );
 };
-
-const SpacePage = memo(({ sectionRef, parent }) => (
-  <div ref={sectionRef} style={{ ...fixedPageStyle, zIndex: 1, opacity: 0 }}>
-    <SecondSection father={parent} />
-  </div>
-));
-
-const PageWrapper = memo(({ sectionRef, children }) => (
-  <div ref={sectionRef} style={{ ...fixedPageStyle, zIndex: 1, opacity: 0 }}>{children}</div>
-));
 
 // --- LANDING PAGE COMPONENT ---
 const LandingPage = ({ gatePassed, setGatePassed }) => {
-  const [isFirstPage, setIsFirstPage] = useState(true);
-  
-  const PARENT = useRef(null);
-  const transitionRefs = { t1: useRef(null), t2: useRef(null), t3: useRef(null), t4: useRef(null), t5: useRef(null) };
-  const sectionRefs = { goku: useRef(null), space: useRef(null), spring: useRef(null), summer: useRef(null), autumn: useRef(null) };
-
-  // Handle Gatekeeper logic
   const handleSelect = (mode) => {
     if (mode === '3d') {
       window.location.href = 'https://3d.ahouba.com';
@@ -53,100 +80,10 @@ const LandingPage = ({ gatePassed, setGatePassed }) => {
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => { setIsFirstPage(window.scrollY < window.innerHeight * 2.3); };
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // If gate not passed, show Gatekeeper and NOTHING else
+  // If gate not passed, show Gatekeeper
   if (!gatePassed) return <Gatekeeper onSelect={handleSelect} />;
 
-  return (
-    <>
-      {/* --- SCROLL TRACKER (INVISIBLE LAYOUT) --- 
-          This defines the scroll height and navigation anchors. 
-          IDs are positioned absolutely to avoid layout shifts (glitches).
-      */}
-      <div ref={PARENT} className="relative w-full" style={{ height: 'auto', minHeight: '1200vh' }}>
-        
-        {/* 1. HOME */}
-        <div id="home" className="absolute top-0 w-full h-1 pointer-events-none" />
-        <div className="h-screen w-full" /> 
-
-        {/* TRANSITION 1 */}
-        <div ref={transitionRefs.t1} className="h-[300vh] w-full" />
-        
-        {/* 2. ABOUT (Spring Section) */}
-        <div id="about" className="absolute w-full h-1 pointer-events-none" style={{ top: '400vh' }} /> 
-        {/* The top value approx matches (100vh home + 300vh t1) */}
-        
-        <div className="h-[100vh] w-full" />
-
-        {/* TRANSITION 2 */}
-        <div ref={transitionRefs.t2} className="h-[300vh] w-full" />
-        
-        {/* 3. EVENTS (Winter/Space Section) */}
-        {/* ID placed on the space-trigger container */}
-        <div id="events" className="absolute w-full h-1 pointer-events-none" style={{ top: '800vh' }} />
-        <div id="space-trigger" className="h-[150vh] bg-transparent w-full" />
-        
-        {/* TRANSITION 3 */}
-        <div ref={transitionRefs.t3} className="h-[300vh] w-full" />
-        
-        {/* 4. PEOPLE (Summer Section) */}
-        <div id="people" className="absolute w-full h-1 pointer-events-none" style={{ top: '1250vh' }} />
-        <div className="h-[100vh] w-full" />
-
-        {/* TRANSITION 4 */}
-        <div ref={transitionRefs.t4} className="h-[300vh] w-full" />
-        
-        {/* 5. SPONSORS (Autumn Section) */}
-        <div id="sponsors" className="absolute w-full h-1 pointer-events-none" style={{ top: '1650vh' }} />
-        <div className="h-[250vh] w-full" /> 
-
-        {/* FOOTER TRANSITION */}
-        <div ref={transitionRefs.t5} className="h-[150vh] w-full" />
-      </div>
-
-      {/* --- VISUAL LAYERS (FIXED POSITION) --- */}
-      <div className="fixed inset-0 w-full h-screen overflow-hidden pointer-events-none">
-        
-        <SideTypography isFirstPage={isFirstPage} />
-        
-        {/* 1. GOKU */}
-        <GokuPage sectionRef={sectionRefs.goku} />
-        
-        {/* 2. SPRING */}
-        <PageWrapper sectionRef={sectionRefs.spring}>
-            <SpringSection globalTriggerRef={transitionRefs.t1} />
-        </PageWrapper>
-        
-        {/* 3. SPACE/WINTER */}
-        <SpacePage sectionRef={sectionRefs.space} parent={PARENT} />
-        
-        {/* 4. SUMMER */}
-        <PageWrapper sectionRef={sectionRefs.summer}>
-            <SummerSection globalTriggerRef={transitionRefs.t3} />
-        </PageWrapper>
-        
-        {/* 5. AUTUMN */}
-        <PageWrapper sectionRef={sectionRefs.autumn}>
-            <AutumnSection globalTriggerRef={transitionRefs.t4} />
-        </PageWrapper>
-
-        {/* TRANSITIONS */}
-        <FracturedParallelogramTransition color1="#160E1E" triggerRef={transitionRefs.t1} nextSectionRef={sectionRefs.spring} />
-        <FracturedParallelogramTransition color1="#0b1b33" triggerRef={transitionRefs.t2} nextSectionRef={sectionRefs.space} />
-        <FracturedParallelogramTransition color1="#ffe0b2" triggerRef={transitionRefs.t3} nextSectionRef={sectionRefs.summer} />
-        <FracturedParallelogramTransition color1="#bcaaa4" triggerRef={transitionRefs.t4} nextSectionRef={sectionRefs.autumn} />
-
-        <AnimatedWaveFooter triggerRef={transitionRefs.t5} />
-
-      </div>
-    </>
-  );
+  return <ComingSoonSection />;
 };
 
 // --- SCROLL RESET HELPER ---
@@ -154,45 +91,20 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
-    ScrollTrigger.refresh();
   }, [pathname]);
   return null;
 };
 
 // --- MAIN APP COMPONENT ---
 function App() {
-  // ✅ STATE: Check session storage immediately
   const [gatePassed, setGatePassed] = useState(() => {
     return sessionStorage.getItem('ahouba_gate_passed') === 'true';
   });
   
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = useCallback(() => setIsMenuOpen(v => !v), []);
-  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-
   return (
     <Router>
       <ScrollToTop />
       
-      {/* ✅ CONDITION: Only render Navbar & Menu if Gate is Passed */}
-      {gatePassed && (
-        <>
-          {/* NAVBAR: z-[1000] */}
-          <div className="fixed top-0 left-0 right-0 z-[1000] pointer-events-auto">
-            <Navbar toggleMenu={toggleMenu} />
-            <GlitchMenu onClick={toggleMenu} isOpen={isMenuOpen} />
-          </div>
-
-          {/* OVERLAY MENU: z-[999] */}
-          <div className="fixed inset-0 z-[999] pointer-events-none">
-             <div className="pointer-events-auto">
-                <OverlayMenu isOpen={isMenuOpen} closeMenu={closeMenu} />
-             </div>
-          </div>
-        </>
-      )}
-
       <Routes>
         <Route 
           path="/" 
@@ -203,7 +115,7 @@ function App() {
             />
           } 
         />
-        <Route path="/events" element={<EventPage />} />
+        {/* All other routes removed to keep it focused on the incoming project */}
       </Routes>
     </Router>
   );
