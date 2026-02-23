@@ -1,258 +1,268 @@
-import React, { useRef, useLayoutEffect, useState, useMemo } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import gsap from 'gsap';
 
-gsap.registerPlugin(ScrollTrigger);
-
-const YourNameSection = ({ globalTriggerRef }) => {
-  const sectionRef = useRef(null);
-  const bigDivRef = useRef(null);
-  const stringPathRef = useRef(null); // Reference for the path itself
-  const auroraContainerRef = useRef(null);
-  const cloudsRef = useRef(null);
+// ==========================================
+// 1. ANIME-THEMED EVENT DATA (26 Events)
+// ==========================================
+const EVENT_DATA = [
+  // --- CODING & TECH ---
+  { id: 0, nodeId: "01", chapter: "EVENT 01", title: "COMPETITIVE PROGRAMMING", desc: "Test your algorithmic prowess in a high-stakes race against the clock.", bgImg: "https://images4.alphacoders.com/206/206489.jpg" }, // Serial Experiments Lain (Code/Wires)
+  { id: 1, nodeId: "02", chapter: "EVENT 02", title: "TECH ART", desc: "Where creativity meets circuitry. Design visual masterpieces using code and hardware.", bgImg: "https://images3.alphacoders.com/813/813083.jpg" }, // Shelter (Virtual Art)
+  { id: 2, nodeId: "03", chapter: "EVENT 03", title: "HACKATHON [OFFLINE]", desc: "24-48 hours of intense building, coffee, and innovation in a physical workspace.", bgImg: "https://images5.alphacoders.com/694/694247.png" }, // New Game! (Office Dev)
+  { id: 3, nodeId: "04", chapter: "EVENT 04", title: "HACKATHON [ONLINE]", desc: "Global collaboration from your own desk. Build the future of software and web.", bgImg: "https://images2.alphacoders.com/712/712032.jpg" }, // Summer Wars (Cyber World)
+  { id: 4, nodeId: "05", chapter: "EVENT 05", title: "CODE-HUNT", desc: "Solve riddles hidden within source code to find the ultimate treasure.", bgImg: "https://images.alphacoders.com/229/229683.jpg" }, // Steins;Gate (Computer Lab)
+  { id: 5, nodeId: "06", chapter: "EVENT 06", title: "CTF (CAPTURE THE FLAG)", desc: "Navigate through vulnerabilities and secure the system in this cybersecurity challenge.", bgImg: "https://images.alphacoders.com/197/197828.jpg" }, // Ghost in the Shell (Hacking)
   
-  const [activeIndex, setActiveIndex] = useState(0);
+  // --- CREATIVE ---
+  { id: 6, nodeId: "07", chapter: "EVENT 07", title: "TYPING TEST", desc: "Speed and accuracy are your only weapons. Reach the highest WPM to win.", bgImg: "https://images5.alphacoders.com/906/906316.jpg" }, // Violet Evergarden (Typewriter)
+  { id: 7, nodeId: "08", chapter: "EVENT 08", title: "AUDIO EDITING", desc: "Master the waves. Create immersive soundscapes and crystal clear mixes.", bgImg: "https://images.alphacoders.com/832/83283.jpg" }, // K-On! (Music/Gear)
+  { id: 8, nodeId: "09", chapter: "EVENT 09", title: "VIDEO EDITING", desc: "Stitch reality together. Tell a story through motion, cuts, and color grading.", bgImg: "https://images8.alphacoders.com/106/1066497.jpg" }, // Eizouken (Animation/Film)
+  { id: 9, nodeId: "10", chapter: "EVENT 10", title: "UI/UX DESIGN", desc: "Craft seamless user journeys and beautiful interfaces that define the digital age.", bgImg: "https://images8.alphacoders.com/545/545909.jpg" }, // SAO (HUD Interface)
+  { id: 10, nodeId: "11", chapter: "EVENT 11", title: "APP DEVELOPMENT", desc: "Build functional mobile solutions that solve real-world problems in real time.", bgImg: "https://images2.alphacoders.com/555/55556.jpg" }, // Eden of the East (Phone/UI)
+  { id: 11, nodeId: "12", chapter: "EVENT 12", title: "3-D DESIGN", desc: "Model three-dimensional worlds and characters from a blank digital canvas.", bgImg: "https://images5.alphacoders.com/335/335899.jpg" }, // Evangelion (Geofront/Structures)
+  
+  // --- GAMING ---
+  { id: 12, nodeId: "13", chapter: "EVENT 13", title: "VALORANT [ONLINE]", desc: "Tactical precision meets supernatural abilities. Secure the website with your team.", bgImg: "https://images6.alphacoders.com/124/1249764.jpg" }, // Lycoris Recoil (Guns/Action)
+  { id: 13, nodeId: "14", chapter: "EVENT 14", title: "BGMI [ONLINE]", desc: "Drop into the battlegrounds and be the last squad standing in this tactical shooter.", bgImg: "https://images.alphacoders.com/516/516662.jpg" }, // SAO GGO (Sniper)
+  { id: 14, nodeId: "15", chapter: "EVENT 15", title: "FREE FIRE [ONLINE]", desc: "Fast-paced survival. Outwit and outgun your opponents in the ultimate showdown.", bgImg: "https://images.alphacoders.com/228/228543.jpg" }, // Black Lagoon (Dual Wield)
+  { id: 15, nodeId: "16", chapter: "EVENT 16", title: "CHESS [ON-SITE]", desc: "The ultimate game of strategy. Outmaneuver the grandmasters in physical combat.", bgImg: "https://images3.alphacoders.com/549/549929.jpg" }, // No Game No Life (Chess Piece)
+  { id: 16, nodeId: "17", chapter: "EVENT 17", title: "GAME-Y [ON-SITE]", desc: "A mystery gaming challenge designed to test your reflexes across multiple genres.", bgImg: "https://images6.alphacoders.com/861/861596.jpg" }, // Kakegurui (Gambling/Intensity)
+  { id: 17, nodeId: "18", chapter: "EVENT 18", title: "ARCADE", desc: "Relive the classics. High scores and flashing lights await the arcade king.", bgImg: "https://images.alphacoders.com/985/985149.png" }, // High Score Girl (Retro Cab)
+  
+  // --- ROBOTICS & HARDWARE ---
+  { id: 18, nodeId: "19", chapter: "EVENT 19", title: "ROBOWAR", desc: "Sparks will fly. Metal-on-metal destruction in the ultimate bot arena.", bgImg: "https://images.alphacoders.com/604/604770.jpg" }, // Gurren Lagann (Mecha Drill)
+  { id: 19, nodeId: "20", chapter: "EVENT 20", title: "LINE FOLLOWER", desc: "Precision engineering. Program your bot to navigate the path with zero error.", bgImg: "https://images5.alphacoders.com/434/434604.jpg" }, // Robotics;Notes (Small Robot)
+  { id: 20, nodeId: "21", chapter: "EVENT 21", title: "ROBO RACE", desc: "Built for speed. Drag race your robotic creations to the finish line.", bgImg: "https://images8.alphacoders.com/476/476698.jpg" }, // Redline (Speed/Racing)
+  { id: 21, nodeId: "22", chapter: "EVENT 22", title: "CIRCUIT DESIGN", desc: "Logic gates and electron flows. Bridge the gap between components.", bgImg: "https://images7.alphacoders.com/105/1059424.jpg" }, // Dr. Stone (Lightbulb/Science)
+  { id: 22, nodeId: "23", chapter: "EVENT 23", title: "PCB DESIGN", desc: "The architecture of hardware. Lay out the traces that power modern devices.", bgImg: "https://images3.alphacoders.com/211/211925.jpg" }, // Lain (Hardware/Chips)
+  { id: 23, nodeId: "24", chapter: "EVENT 24", title: "DRONE RACE", desc: "Aero-dynamic dominance. Navigate the air gates at blistering speeds.", bgImg: "https://images5.alphacoders.com/105/1053787.jpg" }, // Weathering With You (Sky/Clouds)
+  { id: 24, nodeId: "25", chapter: "EVENT 25", title: "SUMO FIGHT", desc: "Pure power. Push the opponent out of the ring using clever weight distribution.", bgImg: "https://images.alphacoders.com/956/956461.jpg" }, // Hinomaru Sumo (Impact)
+  { id: 25, nodeId: "26", chapter: "EVENT 26", title: "SCRAP TECH", desc: "Innovation from waste. Build functional tech using only recycled materials.", bgImg: "https://images6.alphacoders.com/913/913251.jpg" }  // Megalo Box (Junk Gear)
+].map(event => ({
+  ...event,
+  titleSize: "text-3xl md:text-5xl lg:text-7xl",
+  descSize: "text-[11px] md:text-sm lg:text-base"
+}));
 
-  const data = useMemo(() => {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    return alphabet.map((char, index) => ({
-      id: char,
-      title: `TWILIGHT HOUR ${char}`,
-      desc: `THREAD OF FATE ${index < 9 ? '0' + (index + 1) : index + 1}`,
-      bio: `Timeline diverging at Node ${char}. The comet trail leaves a soft glow across the winter horizon. The cold air carries the sound of the lake's heartbeat.`,
-      img: [
-        "https://images.unsplash.com/photo-1506318137071-a8bcbf6d919d?q=80&w=500&auto=format&fit=crop", 
-        "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=500&auto=format&fit=crop", 
-        "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=500&auto=format&fit=crop"
-      ][index % 3]
-    }));
-  }, []);
+const EventPage = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const isAnimating = useRef(false);
+  const stringPathRef = useRef(null);
+  
+  const TOTAL_EVENTS = EVENT_DATA.length;
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      
-      // --- 1. BIG RANDOM ORGANIC THREAD ANIMATION ---
       const stringPath = stringPathRef.current;
-      const waveConfig = { 
-        p1: 0, p2: 0, p3: 0, 
-        amp: 60 
-      };
-
+      const waveConfig = { p1: 0, p2: 0, p3: 0, amp: 80 };
       gsap.to(waveConfig, {
-        p1: Math.PI * 4,
-        p2: Math.PI * 2,
-        p3: Math.PI * 3,
-        amp: 150, 
-        repeat: -1,
-        duration: 14,
-        yoyo: true,
-        ease: "sine.inOut",
+        p1: Math.PI * 4, p2: Math.PI * 2, p3: Math.PI * 3,
+        amp: 180, repeat: -1, duration: 15, yoyo: true, ease: "sine.inOut",
         onUpdate: () => {
           const a = waveConfig.amp;
-          const y1 = 450 + Math.sin(waveConfig.p1) * a;
-          const y2 = 450 + Math.cos(waveConfig.p2) * (a * 1.3); 
-          const y3 = 450 + Math.sin(waveConfig.p3) * (a * 0.8);
-          const newPath = `M-200,450 C200,${y1} 500,${y2} 720,${y3} C940,${y2} 1300,${y1} 1700,450`;
-          stringPath.setAttribute("d", newPath);
+          const y1 = 500 + Math.sin(waveConfig.p1) * a;
+          const y2 = 500 + Math.cos(waveConfig.p2) * (a * 1.3); 
+          const y3 = 500 + Math.sin(waveConfig.p3) * (a * 0.8);
+          const newPath = `M-200,500 C200,200 500,${y2} 720,${y3} C940,${y2} 1300,${y1} 1700,500`;
+          if(stringPath) stringPath.setAttribute("d", newPath);
         }
       });
-
-      gsap.to(".heading-aurora-glow", {
-        x: "random(-30, 30)",
-        skewX: "random(-15, 15)",
-        duration: 6,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut"
-      });
-
-      gsap.to(".string-svg", {
-        x: -50,
-        duration: 10,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut"
-      });
-
-      const layers = gsap.utils.toArray(".aurora-layer");
-      layers.forEach((layer, i) => {
-        gsap.to(layer, {
-          x: "random(-15, 15)%",
-          y: "random(-10, 10)%",
-          skewX: "random(-20, 20)",
-          opacity: "random(0.3, 0.6)",
-          duration: "random(6, 12)",
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: i * 0.5
-        });
-      });
-
-      gsap.to(".cloud-layer", {
-        x: "+=30",
-        duration: 15,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: 3
-      });
-
-      const flakes = gsap.utils.toArray(".snowflake");
-      flakes.forEach((flake) => {
-        gsap.set(flake, { 
-          x: gsap.utils.random(0, window.innerWidth), 
-          y: gsap.utils.random(-100, -10),
-          opacity: gsap.utils.random(0.3, 0.8),
-          scale: gsap.utils.random(0.3, 0.7)
-        });
-        gsap.to(flake, {
-          y: window.innerHeight + 100,
-          x: `+=${gsap.utils.random(-40, 40)}`, 
-          rotation: gsap.utils.random(0, 360),
-          duration: gsap.utils.random(10, 25),
-          ease: "none",
-          repeat: -1,
-        });
-      });
-
-      const triggerElement = globalTriggerRef?.current || sectionRef.current;
-      gsap.from(".list-item-text", { 
-        x: -20, 
-        opacity: 0, 
-        filter: "blur(5px)",
-        stagger: 0.04, 
-        duration: 1, 
-        ease: "power3.out",
-        scrollTrigger: {
-            trigger: triggerElement,
-            start: globalTriggerRef ? "70% center" : "top center", 
-        }
-      });
-
-    }, sectionRef);
+    });
     return () => ctx.revert();
-  }, [globalTriggerRef]);
+  }, []);
 
-  const handleItemClick = (index) => {
-    if (index === activeIndex) return;
-    const tl = gsap.timeline();
-    tl.to(bigDivRef.current, { opacity: 0, y: 10, duration: 0.2, ease: "power2.in", onComplete: () => setActiveIndex(index) })
-      .to(bigDivRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+  const getShortestDiff = (index) => {
+    let diff = (index - activeIndex) % TOTAL_EVENTS;
+    if (diff < 0) diff += TOTAL_EVENTS;
+    if (diff > TOTAL_EVENTS / 2) diff -= TOTAL_EVENTS;
+    return diff;
+  };
+
+  const handleWheel = (e) => {
+    if (isAnimating.current) return;
+    if (e.deltaY > 10) nextEvent();
+    else if (e.deltaY < -10) prevEvent();
+  };
+
+  const nextEvent = () => {
+    isAnimating.current = true;
+    setActiveIndex((prev) => (prev + 1) % TOTAL_EVENTS);
+    setTimeout(() => { isAnimating.current = false; }, 650); 
+  };
+
+  const prevEvent = () => {
+    isAnimating.current = true;
+    setActiveIndex((prev) => (prev - 1 + TOTAL_EVENTS) % TOTAL_EVENTS);
+    setTimeout(() => { isAnimating.current = false; }, 650);
+  };
+
+  const goToEvent = (index) => {
+    if (isAnimating.current || activeIndex === index) return;
+    isAnimating.current = true;
+    setActiveIndex(index);
+    setTimeout(() => { isAnimating.current = false; }, 650);
+  };
+
+  const touchStartY = useRef(0);
+  const handleTouchStart = (e) => { touchStartY.current = e.touches[0].clientY; };
+  const handleTouchEnd = (e) => {
+    const touchEndY = e.changedTouches[0].clientY;
+    const diff = touchStartY.current - touchEndY;
+    if (Math.abs(diff) > 20) {
+      if (diff > 0) nextEvent();
+      else prevEvent();
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") nextEvent();
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") prevEvent();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const getContainerStyles = (index) => {
+    const diff = getShortestDiff(index);
+    let style = {
+      clipPath: 'polygon(35% 60%, 35% 60%, 35% 60%)', 
+      opacity: 0, zIndex: 0, pointerEvents: 'none',
+      backgroundColor: '#3f3f46', transitionDuration: '800ms', 
+    };
+
+    if (diff === 0) {
+      style = { ...style, clipPath: 'polygon(1% 1%, 99% 1%, 35% 56%)', opacity: 1, zIndex: 40, pointerEvents: 'auto', backgroundColor: '#52525b' };
+    } else if (diff === 1) {
+      style = { ...style, clipPath: 'polygon(99% 3%, 99% 99%, 38% 60%)', opacity: 0.8, zIndex: 30, pointerEvents: 'auto', backgroundColor: '#3f3f46' };
+    } else if (diff === 2) {
+      style = { ...style, clipPath: 'polygon(97% 99%, 1% 99%, 35% 64%)', opacity: 0.5, zIndex: 20, pointerEvents: 'none', backgroundColor: '#27272a' };
+    } else if (diff === -1) {
+      style = { ...style, clipPath: 'polygon(1% 97%, 1% 3%, 32% 60%)', opacity: 0.25, zIndex: 10, pointerEvents: 'auto', backgroundColor: '#18181b' };
+    } else if (diff === 3) {
+      style = { ...style, clipPath: 'polygon(100% 100%, 100% 100%, 35% 60%)', opacity: 0, zIndex: 5 };
+    } else if (diff === -2) {
+      style = { ...style, clipPath: 'polygon(0% 0%, 0% 0%, 35% 60%)', opacity: 0, zIndex: 5 };
+    }
+    return style;
+  };
+
+  const getContentStyles = (index) => {
+    const diff = getShortestDiff(index);
+    if (diff === 0) return { top: '22%', left: '45%', transform: 'translate(-50%, -50%) scale(1)' }; 
+    if (diff === 1) return { top: '50%', left: '75%', transform: 'translate(-50%, -50%) scale(0.85)' }; 
+    if (diff === 2) return { top: '82%', left: '45%', transform: 'translate(-50%, -50%) scale(0.6)' }; 
+    if (diff === -1) return { top: '50%', left: '15%', transform: 'translate(-50%, -50%) scale(0.4)' }; 
+    return { top: '50%', left: '50%', transform: 'translate(-50%, -50%) scale(0.1)' };
   };
 
   return (
-    <div ref={sectionRef} className="relative w-full min-h-screen overflow-hidden flex flex-col items-center justify-start px-4 md:px-10 py-12 md:py-16 bg-[#070b14] font-sans">
+    <div 
+      className="fixed inset-0 w-full h-full bg-zinc-950 overflow-hidden select-none font-sans touch-none overscroll-none"
+      onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-multiply" style={{ backgroundImage: `radial-gradient(#111 1px, transparent 0)`, backgroundSize: '16px 16px' }} />
       
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a101e] via-[#1a1133] to-[#05080f] -z-20"></div>
-      
-      <div ref={auroraContainerRef} className="absolute top-[-10%] left-0 w-full h-[60vh] z-0 pointer-events-none overflow-hidden mix-blend-screen opacity-50">
-        <div className="aurora-layer absolute top-0 left-[10%] w-[80%] h-[150px] bg-[#00F3FF] rounded-full blur-[100px] opacity-40 origin-center"></div>
-        <div className="aurora-layer absolute top-[50px] left-[20%] w-[60%] h-[200px] bg-[#8000ff] rounded-full blur-[120px] opacity-30 origin-center"></div>
-        <div className="aurora-layer absolute top-[20px] left-[40%] w-[70%] h-[180px] bg-[#FF007A] rounded-full blur-[110px] opacity-25 origin-center"></div>
-      </div>
-
-      <div className="absolute inset-0 opacity-40 z-[-15]" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '80px 80px' }}></div>
-
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-50 mix-blend-screen">
-        <svg className="string-svg w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
-            <path ref={stringPathRef} d="M-200,450 C200,200 400,800 720,450 C1040,100 1240,700 1700,450" stroke="#ff4d4d" strokeWidth="3" strokeLinecap="round" filter="url(#string-glow)"/>
-            <defs><filter id="string-glow"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-80 mix-blend-screen filter drop-shadow-[0_0_15px_rgba(255,51,0,0.8)]">
+        <svg className="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+            <path ref={stringPathRef} d="M-200,500 C200,200 400,800 720,500 C1040,100 1240,700 1700,500" stroke="#ff3300" strokeWidth="6" strokeLinecap="round" />
         </svg>
       </div>
 
-      {/* --- TOP HEADING SECTION (Gap Decreased) --- */}
-      <div className="relative z-30 flex flex-col items-center mt-5"> 
-        <div className="heading-aurora-glow absolute -top-10 w-[300px] h-[100px] bg-[#ff007a]/40 blur-[70px] rounded-full pointer-events-none opacity-60"></div>
-        <h1 className="text-white text-5xl md:text-7xl font-bold tracking-[0.05em] uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-          Events
-        </h1>
-        <div className="w-44 h-[2px] bg-gradient-to-r from-transparent via-[#ff4d4d] to-transparent mt-2 opacity-70"></div>
+      <div className="absolute top-4 left-4 md:top-8 md:left-8 z-50 pointer-events-none">
+         <h1 className="text-white text-3xl md:text-6xl font-black italic tracking-tighter uppercase drop-shadow-[3px_3px_0px_rgba(194,65,12,1)]">
+           EVENTS
+         </h1>
+         <div className="text-orange-600 font-bold tracking-[0.2em] text-[8px] md:text-[10px] mt-1 uppercase">{TOTAL_EVENTS} EVENTS IN TOTAL</div>
       </div>
 
-      {/* Main Content (Gap to heading decreased) */}
-      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-7xl h-full md:h-[70vh] gap-8 md:gap-16 justify-center items-center mt-0">
-        
-        {/* LEFT LIST */}
-        <div className="order-2 md:order-1 flex flex-col w-full md:w-[45%] h-[50vh] md:h-[65vh] overflow-y-auto overflow-x-visible no-scrollbar pr-20 z-20 select-none mask-fade">
-          <div className="flex flex-col gap-6 pl-4 md:pl-8 py-10">
-            {data.map((item, i) => (
-                <div 
-                  key={item.id} 
-                  onClick={() => handleItemClick(i)} 
-                  className="group cursor-pointer flex items-center gap-5 transition-all duration-500"
-                  style={{ 
-                    paddingTop: activeIndex === i ? '15px' : '0px',
-                    paddingBottom: activeIndex === i ? '15px' : '0px',
-                  }}
-                >
-                  <span className={`text-[10px] font-sans font-bold tracking-widest transition-all duration-300 ${activeIndex === i ? "text-[#ff4d4d]" : "text-indigo-200/30"}`}>
-                    {i < 9 ? `0${i + 1}` : i + 1}
-                  </span>
-                  <div className="list-item-text flex flex-col">
-                    <h4 
-                      className={`text-xl md:text-4xl font-semibold tracking-tight transition-all duration-500 leading-none ${activeIndex === i ? "text-white drop-shadow-[0_0_8px_#ff4d4d]" : "text-slate-500 group-hover:text-indigo-200 "}`}
-                      style={{ 
-                        transform: activeIndex === i ? 'scale(1.2)' : 'scale(1)',
-                        transformOrigin: 'left center',
-                        display: 'inline-block'        
-                      }}
-                    >
-                      {item.title}
-                    </h4>
-                  </div>
-                </div>
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT CARD */}
-        <div className="order-1 md:order-2 w-full md:w-[65%] flex items-center justify-center z-10">
-          <div 
-            ref={bigDivRef} 
-            className="relative w-full h-[45vh] md:h-[60vh] bg-white/[0.01] backdrop-blur-[10px] rounded-[1rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] p-12 flex flex-col justify-center overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-            <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-[#ff4d4d]/5 rounded-full blur-[100px] pointer-events-none"></div>
-
-            <div className="absolute top-6 right-6 md:top-[3vw] md:right-[3vw] w-[24vw] h-[24vw] md:w-[14vw] md:h-[14vw] rounded-full border border-white/10 shadow-xl overflow-hidden z-20 pointer-events-none">
-                <img src={data[activeIndex].img} alt="" className="w-full h-full object-cover opacity-80 mix-blend-lighten" />
-            </div>
-
-            <div className="relative z-10 w-full max-w-[70%] text-left">
-              <div className="flex items-center gap-3 mb-6 opacity-70">
-                <div className="w-10 h-[1px] bg-[#ff4d4d]"></div>
-                <span className="text-white text-[10px] tracking-[0.4em] uppercase">Fragment // {data[activeIndex].id}</span>
+      {/* RIGHT SIDE TIMELINE INDEX */}
+      <div className="absolute right-1 md:right-6 top-1/2 -translate-y-1/2 z-50 h-[60vh] w-12 md:w-32 flex flex-col justify-center pointer-events-auto">
+        <div className="h-full w-full overflow-y-auto no-scrollbar mask-fade-y flex flex-col gap-2 md:gap-4 py-10">
+          {EVENT_DATA.map((event, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <div key={event.id} onClick={() => goToEvent(index)} className={`group flex items-center justify-end gap-1 md:gap-3 cursor-pointer transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-20 hover:opacity-100'}`}>
+                <span className={`text-[8px] md:text-xs font-black transition-all duration-300 ${isActive ? 'text-orange-500 scale-125 origin-right' : 'text-white'}`}>
+                  {event.nodeId}
+                </span>
+                <div className={`h-[2px] transition-all duration-300 ${isActive ? 'w-4 md:w-8 bg-orange-600 shadow-[0_0_10px_rgba(234,88,12,0.8)]' : 'w-1 md:w-3 bg-white'}`} />
               </div>
-              <h2 className="text-4xl md:text-[4vw] font-bold text-white mb-6 tracking-tight leading-[0.9] drop-shadow-md">
-                {data[activeIndex].title}
-              </h2>
-              <p className="text-sm md:text-xl text-indigo-100/70 leading-relaxed font-light pl-6 border-l border-white/10 py-2 italic">
-                {data[activeIndex].bio}
-              </p>
-            </div>
-            <div className="absolute bottom-12 right-12 opacity-30 text-[9px] font-sans text-white tracking-[0.5em]">KIMI_NO_NA_WA_SYSTEM</div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
- {/* SNOW LAYER (TOP LAYER) */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {[...Array(60)].map((_, i) => (
-            <div key={`snow-${i}`} className="snowflake absolute bg-white rounded-full blur-[0.5px]" style={{ width: '6px', height: '6px', boxShadow: "0 0 4px rgba(255, 255, 255, 0.5)" }} />
-        ))}
+      <div className="absolute inset-0 w-full h-full z-10 pointer-events-none">
+        {EVENT_DATA.map((event, index) => {
+          const diff = getShortestDiff(index);
+          const isVisible = (diff >= -1 && diff <= 2);
+          const isNearby = (diff >= -2 && diff <= 3);
+          const styles = getContainerStyles(index);
+          
+          return (
+            <div key={event.id} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: styles.zIndex }}>
+              <div 
+                className={`group absolute inset-0 w-full h-full overflow-hidden transition-all ease-[cubic-bezier(0.25,1,0.5,1)] hover:!duration-150 ${isVisible ? 'cursor-pointer pointer-events-auto' : 'pointer-events-none'}`}
+                style={{ clipPath: styles.clipPath, opacity: styles.opacity, backgroundColor: styles.backgroundColor, transitionDuration: styles.transitionDuration }}
+                onClick={() => { if (diff === 1) nextEvent(); if (diff === -1) prevEvent(); }}
+              >
+                {isNearby && (
+                  <>
+                    <img src={event.bgImg} alt="" loading="lazy" className={`absolute inset-0 w-full h-full object-cover transition-all duration-[400ms] group-hover:scale-110 ${diff === 0 ? 'grayscale-[20%] contrast-100 scale-100 opacity-90' : 'grayscale contrast-150 brightness-50 opacity-30'} group-hover:grayscale-0 group-hover:opacity-100`} />
+                    <div className="absolute inset-0 bg-zinc-950/40 mix-blend-multiply transition-opacity group-hover:opacity-0 pointer-events-none" />
+
+                    <div 
+                      className="absolute flex flex-col items-center justify-center text-center transition-all ease-[cubic-bezier(0.25,1,0.5,1)] w-[85vw] md:w-[65vw] lg:w-[45vw] pointer-events-none"
+                      style={{ ...getContentStyles(index), transitionDuration: styles.transitionDuration }}
+                    >
+                      {isVisible && (
+                        <div className="flex flex-col items-center w-full px-4 py-2">
+                          <div className="flex items-center gap-2 mb-3 md:mb-6 transition-transform group-hover:-translate-y-1">
+                            <div className={`w-6 md:w-8 h-1 skew-x-[-20deg] ${diff === 0 ? 'bg-orange-600' : 'bg-white/40'}`} />
+                            <span className={`text-[10px] lg:text-xs font-black tracking-[0.2em] uppercase ${diff === 0 ? 'text-orange-500' : 'text-white/80'}`}>
+                              {event.chapter}
+                            </span>
+                            <div className={`w-6 md:w-8 h-1 skew-x-[-20deg] ${diff === 0 ? 'bg-orange-600' : 'bg-white/40'}`} />
+                          </div>
+                          
+                          <h2 className={`font-black italic tracking-tighter leading-[0.9] uppercase drop-shadow-[2px_2px_10px_rgba(0,0,0,0.8)] transition-all group-hover:text-white ${event.titleSize} ${diff === 0 ? 'text-white' : 'text-zinc-400'}`}>
+                            {event.title}
+                          </h2>
+                          
+                          <div className="mt-4 md:mt-8 relative w-full max-w-[90%] md:max-w-[80%]">
+                            <p className={`text-zinc-200 font-medium italic px-4 py-2 md:py-4 bg-zinc-950/80 border-l-4 border-orange-600 backdrop-blur-md transition-opacity ${event.descSize} ${diff === 0 ? 'opacity-100' : 'opacity-0'}`}>
+                              {event.desc}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {isVisible && (
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] md:text-[30vw] lg:text-[25vw] font-black text-white/5 italic tracking-tighter select-none -z-10 mix-blend-overlay transition-all group-hover:text-white/10 group-hover:scale-105">
+                          {event.nodeId}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <style jsx="true">{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .mask-fade {
-            mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+        .mask-fade-y {
+          mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+          -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
         }
       `}</style>
     </div>
   );
 };
 
-export default YourNameSection;
+export default EventPage;

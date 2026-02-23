@@ -1,130 +1,166 @@
-import React, { useState, useRef, useEffect } from 'react';
-import gsap from "gsap";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import React, { useState, useLayoutEffect, useEffect, useRef, useCallback, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { gsap } from 'gsap';
 
-// --- EXTERNAL COMPONENTS ---
-// Assuming Gatekeeper passes back '2d' or '3d' in its onSelect callback
-import Gatekeeper from './LandingPageComponents/0Gatekeeper.jsx';
+// Main Landing Sections
+import Navbar from './NewPagesComponent/Navbar.jsx';
+import Gatekeeper from './NewPagesComponent/Gatekeeper.jsx';
+import MangaMenu from './NewPagesComponent/Menu.jsx'; 
+import Home from './NewPagesComponent/Home.jsx';
+import Footer from './NewPagesComponent/Footer.jsx';
 
-// --- COMING SOON VIEW (Dynamic 2D/3D) ---
-const ComingSoonSection = ({ mode }) => {
-  const containerRef = useRef(null);
-  const textRef = useRef(null);
+// Separate Pages
+import EventPage from './OtherPages/EventPage.jsx';
+// Lazy Load for performance
+const ComingSoon = React.lazy(() => import('./NewPagesComponent/ComingSoon.jsx'));
 
-  useEffect(() => {
-    const tl = gsap.timeline();
-    tl.fromTo(textRef.current, 
-      { filter: "blur(20px)", opacity: 0, scale: 0.8 },
-      { filter: "blur(0px)", opacity: 1, scale: 1, duration: 1.5, ease: "power4.out" }
-    );
-  }, []);
+// Lazy Load local sections
+const About = React.lazy(() => import('./NewPagesComponent/About.jsx'));
+const Event = React.lazy(() => import('./NewPagesComponent/Event.jsx')); 
+const People = React.lazy(() => import('./NewPagesComponent/People.jsx'));
+const Sponsors = React.lazy(() => import('./NewPagesComponent/Sponsors.jsx'));
 
-  // Dynamic Content based on Mode
-  const subTitle = mode === '3d' ? '3D EXPERIENCE' : '2D EXPERIENCE';
-  const accentColor = mode === '3d' ? 'text-red-500' : 'text-cyan-500'; // Optional: Different color accent for 3D
-  const gradientClass = mode === '3d' 
-    ? "from-red-500 via-orange-500 to-yellow-600" 
-    : "from-cyan-400 via-blue-500 to-purple-600";
+import backgroundImage from './assets/black_clover.webp';
+
+// ==========================================
+// MAIN LANDING COMPONENT
+// ==========================================
+const MainLanding = ({ gatePassed, handleSelect, imageLoaded, setImageLoaded, mainContentRef }) => {
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    if (!gatePassed) return;
+    
+    let ctx = gsap.context(() => {
+      const revealContent = () => {
+        gsap.to(mainContentRef.current, { 
+          opacity: 1, 
+          visibility: "visible", 
+          duration: 0.8, 
+          ease: "power2.out" 
+        });
+
+        const pendingScroll = sessionStorage.getItem('pendingScroll');
+        if (pendingScroll) {
+          setTimeout(() => {
+            document.getElementById(pendingScroll)?.scrollIntoView({ behavior: "smooth" });
+            sessionStorage.removeItem('pendingScroll');
+          }, 200);
+        }
+      };
+
+      const img = new Image();
+      img.src = backgroundImage;
+      
+      if (img.complete) {
+        setImageLoaded(true);
+        revealContent();
+      } else {
+        img.onload = () => {
+          setImageLoaded(true);
+          revealContent();
+        };
+      }
+    });
+
+    return () => ctx.revert();
+  }, [gatePassed, location.pathname, setImageLoaded, mainContentRef]);
+
+  if (!gatePassed) return <Gatekeeper onSelect={handleSelect} />;
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-[#05070a] flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative w-full min-h-screen bg-black overflow-x-hidden selection:bg-yellow-500 selection:text-black font-['Orbitron']">
       
-      {/* Background Anime VFX */}
-      <div className="absolute inset-0 z-0">
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] ${mode === '3d' ? 'bg-red-500/10' : 'bg-cyan-500/10'} rounded-full blur-[120px] animate-pulse`} />
-        <div className="absolute inset-0 opacity-20" 
-             style={{ backgroundImage: `radial-gradient(circle, #fff 1px, transparent 1px)`, backgroundSize: '50px 50px' }} />
+      {/* GLOBAL BACKGROUND */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            opacity: imageLoaded ? 0.6 : 0, 
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
       </div>
 
-      {/* Main Content */}
-      <div ref={textRef} className="relative z-10 text-center px-4">
-        <div className={`inline-block px-4 py-1 mb-6 border ${mode === '3d' ? 'border-red-500/30 bg-red-500/5' : 'border-cyan-500/30 bg-cyan-500/5'} backdrop-blur-md rounded-full`}>
-          <span className={`text-[10px] font-black tracking-[0.5em] uppercase ${mode === '3d' ? 'text-red-400' : 'text-cyan-400'}`}>
-            Classified Transmission // {mode}
-          </span>
-        </div>
+      <div ref={mainContentRef} className="relative z-10 opacity-0 invisible w-full">
+        <Navbar />
+        
+        {/* HOME SECTION */}
+        <section id="home" className="w-full h-auto md:h-screen flex items-center justify-center pt-24 pb-0 md:py-0">
+          <Home />
+        </section>
 
-        <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase leading-none">
-          AHOUBA <br />
-          <span className={`text-transparent bg-clip-text bg-gradient-to-r ${gradientClass} drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]`}>
-            {mode === '3d' ? '3D' : '2D'}
-          </span>
-        </h1>
+        <Suspense fallback={<div className="py-20 text-center text-white/20 uppercase tracking-widest animate-pulse">Initializing Node...</div>}>
+          
+          {/* ABOUT SECTION */}
+          <section id="about" className="w-full h-auto md:h-screen flex items-center justify-center pt-0 pb-0 md:py-0">
+            <About />
+          </section>
+          
+          {/* EVENT SECTION - Adjusted margin for better mobile gap */}
+          <section id="event" className="w-full h-auto py-0 -mt-20 md:mt-0 md:mb-0 md:py-0">
+            <Event />
+          </section>
 
-        <div className="mt-12 flex flex-col items-center gap-4">
-          <p className="text-gray-500 uppercase tracking-[0.3em] text-sm">Initiating Launch On</p>
-          <div className="relative group">
-            <div className={`absolute -inset-2 ${mode === '3d' ? 'bg-red-500' : 'bg-cyan-500'} blur-xl opacity-20 group-hover:opacity-40 transition duration-1000`}></div>
-            <h2 className="relative text-5xl md:text-7xl font-black text-white italic">
-              FEBRUARY <span className={mode === '3d' ? 'text-red-500' : 'text-cyan-500'}>30</span>
-            </h2>
-          </div>
-          <p className="text-gray-600 font-mono text-xs mt-4 uppercase tracking-widest italic opacity-80">
-            Ahouba {mode} is Incoming
-          </p>
-          <p className="text-gray-800 font-mono text-[10px] mt-2">ERROR: DATE_PARADOX_DETECTED // 2026</p>
-        </div>
+          {/* PEOPLE SECTION - Redirected logic is handled via Menu/Buttons */}
+          <section id="people" className="w-full h-auto py-4 mt-20 md:mt-30 md:py-0">
+            <People />
+          </section>
+
+          {/* SPONSORS SECTION */}
+          <section id="sponsors" className="w-full h-auto pt-0 pb-10 md:py-0">
+            <Sponsors />
+          </section>
+
+          <Footer />
+        </Suspense>
       </div>
-
-      {/* Scanning Line */}
-      <div className={`absolute top-0 left-0 w-full h-[2px] ${mode === '3d' ? 'bg-red-500/30 shadow-[0_0_15px_red]' : 'bg-cyan-500/30 shadow-[0_0_15px_cyan]'} animate-[scan_4s_linear_infinite]`} />
-      
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes scan {
-          0% { top: 0% }
-          100% { top: 100% }
-        }
-      `}} />
     </div>
   );
 };
 
-// --- LANDING PAGE COMPONENT ---
-const LandingPage = ({ appMode, setAppMode }) => {
-  const handleSelect = (selectedMode) => {
-    // Save preference to session storage
-    sessionStorage.setItem('ahouba_mode', selectedMode);
-    // Update state to render the correct view
-    setAppMode(selectedMode);
-  };
-
-  // If mode is selected ('2d' or '3d'), show the Coming Soon view
-  if (appMode) return <ComingSoonSection mode={appMode} />;
-
-  // Otherwise show Gatekeeper
-  return <Gatekeeper onSelect={handleSelect} />;
-};
-
-// --- SCROLL RESET HELPER ---
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-};
-
-// --- MAIN APP COMPONENT ---
+// ==========================================
+// ROOT APP COMPONENT
+// ==========================================
 function App() {
-  // Initialize state from session storage (returns '2d', '3d', or null)
-  const [appMode, setAppMode] = useState(() => {
-    return sessionStorage.getItem('ahouba_mode'); 
-  });
-  
+  const [gatePassed, setGatePassed] = useState(() => sessionStorage.getItem('ahouba_gate_passed') === 'true');
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const mainContentRef = useRef(null);
+
+  const handleSelect = useCallback((mode) => {
+    if (mode === '3d') {
+      window.location.href = 'https://3d.ahouba.com';
+    } else {
+      sessionStorage.setItem('ahouba_gate_passed', 'true');
+      setGatePassed(true);
+    }
+  }, []);
+
   return (
     <Router>
-      <ScrollToTop />
-      
+       {/* Persistence: Menu stays active across all routes */}
+       <MangaMenu />
       <Routes>
-        <Route 
-          path="/" 
-          element={
-            <LandingPage 
-              appMode={appMode} 
-              setAppMode={setAppMode} 
-            />
-          } 
-        />
+        <Route path="/" element={
+          <MainLanding 
+            gatePassed={gatePassed} 
+            handleSelect={handleSelect} 
+            imageLoaded={imageLoaded} 
+            setImageLoaded={setImageLoaded}
+            mainContentRef={mainContentRef} 
+          />
+        } />
+        
+        {/* EVENT SUB-PAGE */}
+        <Route path="/EventPage" element={<EventPage />} />
+        
+        {/* COMING SOON REDIRECTS (Workshop, Merch, etc.) */}
+        <Route path="/ComingSoon" element={
+            <Suspense fallback={<div className="h-screen w-screen bg-black flex items-center justify-center text-white">LOADING SEAL...</div>}>
+                <ComingSoon />
+            </Suspense>
+        } />
       </Routes>
     </Router>
   );
