@@ -12,7 +12,7 @@ import Footer from './NewPagesComponent/Footer.jsx';
 // Separate Pages
 import EventPage from './OtherPages/EventPage.jsx';
 // Lazy Load for performance
-const ComingSoon = React.lazy(() => import('./NewPagesComponent/ComingSoon.jsx'));
+const ComingSoon = React.lazy(() => import('./NewPagesComponent/Comingsoon.jsx'));
 
 // Lazy Load local sections
 const About = React.lazy(() => import('./NewPagesComponent/About.jsx'));
