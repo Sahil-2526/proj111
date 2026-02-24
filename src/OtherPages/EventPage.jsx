@@ -1,50 +1,83 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import gsap from 'gsap';
 
 // ==========================================
-// 1. ANIME-THEMED EVENT DATA (26 Events)
+// 1. ANIME-THEMED EVENT DATA
 // ==========================================
 const EVENT_DATA = [
   // --- CODING & TECH ---
-  { id: 0, nodeId: "01", chapter: "EVENT 01", title: "COMPETITIVE PROGRAMMING", desc: "Test your algorithmic prowess in a high-stakes race against the clock.", bgImg: "https://images4.alphacoders.com/206/206489.jpg" }, // Serial Experiments Lain (Code/Wires)
-  { id: 1, nodeId: "02", chapter: "EVENT 02", title: "TECH ART", desc: "Where creativity meets circuitry. Design visual masterpieces using code and hardware.", bgImg: "https://images3.alphacoders.com/813/813083.jpg" }, // Shelter (Virtual Art)
-  { id: 2, nodeId: "03", chapter: "EVENT 03", title: "HACKATHON [OFFLINE]", desc: "24-48 hours of intense building, coffee, and innovation in a physical workspace.", bgImg: "https://images5.alphacoders.com/694/694247.png" }, // New Game! (Office Dev)
-  { id: 3, nodeId: "04", chapter: "EVENT 04", title: "HACKATHON [ONLINE]", desc: "Global collaboration from your own desk. Build the future of software and web.", bgImg: "https://images2.alphacoders.com/712/712032.jpg" }, // Summer Wars (Cyber World)
-  { id: 4, nodeId: "05", chapter: "EVENT 05", title: "CODE-HUNT", desc: "Solve riddles hidden within source code to find the ultimate treasure.", bgImg: "https://images.alphacoders.com/229/229683.jpg" }, // Steins;Gate (Computer Lab)
-  { id: 5, nodeId: "06", chapter: "EVENT 06", title: "CTF (CAPTURE THE FLAG)", desc: "Navigate through vulnerabilities and secure the system in this cybersecurity challenge.", bgImg: "https://images.alphacoders.com/197/197828.jpg" }, // Ghost in the Shell (Hacking)
+  { id: 0, nodeId: "01", chapter: "EVENT 01", title: "COMPETITIVE PROGRAMMING", desc: "Test your algorithmic prowess in a high-stakes race against the clock.", bgImg: "https://images4.alphacoders.com/206/206489.jpg", link:"https://unstop.com/p/hackathon-ahouba-indian-institute-of-information-technology-iiit-senapati-manipur-1641455" },
+  { id: 1, nodeId: "02", chapter: "EVENT 02", title: "TECH ART", desc: "Where creativity meets circuitry. Design visual masterpieces using code and hardware.", bgImg: "https://images3.alphacoders.com/813/813083.jpg" },
+  { id: 2, nodeId: "03", chapter: "EVENT 03", title: "HACKATHON [OFFLINE]", desc: "24-48 hours of intense building, coffee, and innovation in a physical workspace.", bgImg: "https://images5.alphacoders.com/694/694247.png", link:"https://unstop.com/p/24-hours-hackathon-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643498" },
+  { id: 3, nodeId: "04", chapter: "EVENT 04", title: "HACKATHON [ONLINE]", desc: "Global collaboration from your own desk. Build the future of software and web.", bgImg: "https://images2.alphacoders.com/712/712032.jpg" },
+  { id: 4, nodeId: "05", chapter: "EVENT 05", title: "CODE-HUNT", desc: "Solve riddles hidden within source code to find the ultimate treasure.", bgImg: "https://images.alphacoders.com/229/229683.jpg", link:"https://unstop.com/p/great-pirate-hunt-code-hunt-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643878" },
+  { id: 5, nodeId: "06", chapter: "EVENT 06", title: "CTF (CAPTURE THE FLAG)", desc: "Navigate through vulnerabilities and secure the system in this cybersecurity challenge.", bgImg: "https://images.alphacoders.com/197/197828.jpg" },
   
   // --- CREATIVE ---
-  { id: 6, nodeId: "07", chapter: "EVENT 07", title: "TYPING TEST", desc: "Speed and accuracy are your only weapons. Reach the highest WPM to win.", bgImg: "https://images5.alphacoders.com/906/906316.jpg" }, // Violet Evergarden (Typewriter)
-  { id: 7, nodeId: "08", chapter: "EVENT 08", title: "AUDIO EDITING", desc: "Master the waves. Create immersive soundscapes and crystal clear mixes.", bgImg: "https://images.alphacoders.com/832/83283.jpg" }, // K-On! (Music/Gear)
-  { id: 8, nodeId: "09", chapter: "EVENT 09", title: "VIDEO EDITING", desc: "Stitch reality together. Tell a story through motion, cuts, and color grading.", bgImg: "https://images8.alphacoders.com/106/1066497.jpg" }, // Eizouken (Animation/Film)
-  { id: 9, nodeId: "10", chapter: "EVENT 10", title: "UI/UX DESIGN", desc: "Craft seamless user journeys and beautiful interfaces that define the digital age.", bgImg: "https://images8.alphacoders.com/545/545909.jpg" }, // SAO (HUD Interface)
-  { id: 10, nodeId: "11", chapter: "EVENT 11", title: "APP DEVELOPMENT", desc: "Build functional mobile solutions that solve real-world problems in real time.", bgImg: "https://images2.alphacoders.com/555/55556.jpg" }, // Eden of the East (Phone/UI)
-  { id: 11, nodeId: "12", chapter: "EVENT 12", title: "3-D DESIGN", desc: "Model three-dimensional worlds and characters from a blank digital canvas.", bgImg: "https://images5.alphacoders.com/335/335899.jpg" }, // Evangelion (Geofront/Structures)
+  { id: 6, nodeId: "07", chapter: "EVENT 07", title: "TYPING TEST", desc: "Speed and accuracy are your only weapons. Reach the highest WPM to win.", bgImg: "https://images5.alphacoders.com/906/906316.jpg", link:"https://unstop.com/p/ahouba-the-final-keystroke-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643802" },
+  { id: 7, nodeId: "08", chapter: "EVENT 08", title: "AUDIO EDITING", desc: "Master the waves. Create immersive soundscapes and crystal clear mixes.", bgImg: "https://images.alphacoders.com/832/83283.jpg" },
+  { id: 8, nodeId: "09", chapter: "EVENT 09", title: "VIDEO EDITING", desc: "Stitch reality together. Tell a story through motion, cuts, and color grading.", bgImg: "https://images8.alphacoders.com/106/1066497.jpg" },
+  { id: 9, nodeId: "10", chapter: "EVENT 10", title: "UI/UX DESIGN", desc: "Craft seamless user journeys and beautiful interfaces that define the digital age.", bgImg: "https://images8.alphacoders.com/545/545909.jpg" },
+  { id: 10, nodeId: "11", chapter: "EVENT 11", title: "APP DEVELOPMENT", desc: "Build functional mobile solutions that solve real-world problems in real time.", bgImg: "https://images2.alphacoders.com/555/55556.jpg", link:"https://unstop.com/p/ahouba-appsprint-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643803" },
+  { id: 11, nodeId: "12", chapter: "EVENT 12", title: "3-D DESIGN", desc: "Model three-dimensional worlds and characters from a blank digital canvas.", bgImg: "https://images5.alphacoders.com/335/335899.jpg", link:"https://unstop.com/p/3d-titans-rise-of-creators-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643863" },
   
   // --- GAMING ---
-  { id: 12, nodeId: "13", chapter: "EVENT 13", title: "VALORANT [ONLINE]", desc: "Tactical precision meets supernatural abilities. Secure the website with your team.", bgImg: "https://images6.alphacoders.com/124/1249764.jpg" }, // Lycoris Recoil (Guns/Action)
-  { id: 13, nodeId: "14", chapter: "EVENT 14", title: "BGMI [ONLINE]", desc: "Drop into the battlegrounds and be the last squad standing in this tactical shooter.", bgImg: "https://images.alphacoders.com/516/516662.jpg" }, // SAO GGO (Sniper)
-  { id: 14, nodeId: "15", chapter: "EVENT 15", title: "FREE FIRE [ONLINE]", desc: "Fast-paced survival. Outwit and outgun your opponents in the ultimate showdown.", bgImg: "https://images.alphacoders.com/228/228543.jpg" }, // Black Lagoon (Dual Wield)
-  { id: 15, nodeId: "16", chapter: "EVENT 16", title: "CHESS [ON-SITE]", desc: "The ultimate game of strategy. Outmaneuver the grandmasters in physical combat.", bgImg: "https://images3.alphacoders.com/549/549929.jpg" }, // No Game No Life (Chess Piece)
-  { id: 16, nodeId: "17", chapter: "EVENT 17", title: "GAME-Y [ON-SITE]", desc: "A mystery gaming challenge designed to test your reflexes across multiple genres.", bgImg: "https://images6.alphacoders.com/861/861596.jpg" }, // Kakegurui (Gambling/Intensity)
-  { id: 17, nodeId: "18", chapter: "EVENT 18", title: "ARCADE", desc: "Relive the classics. High scores and flashing lights await the arcade king.", bgImg: "https://images.alphacoders.com/985/985149.png" }, // High Score Girl (Retro Cab)
+  { id: 12, nodeId: "13", chapter: "EVENT 13", title: "VALORANT [ONLINE]", desc: "Tactical precision meets supernatural abilities. Secure the site with your team.", bgImg: "https://images6.alphacoders.com/124/1249764.jpg", link:"https://unstop.com/p/ahouba-e-blitz-valorant-tournament-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643797" },
+  { id: 13, nodeId: "14", chapter: "EVENT 14", title: "BGMI [ONLINE]", desc: "Drop into the battlegrounds and be the last squad standing in this tactical shooter.", bgImg: "https://images.alphacoders.com/516/516662.jpg", link:"https://unstop.com/p/ahouba-e-blitz-bgmi-tournament-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643546" },
+  { id: 14, nodeId: "15", chapter: "EVENT 15", title: "FREE FIRE [ONLINE]", desc: "Fast-paced survival. Outwit and outgun your opponents in the ultimate showdown.", bgImg: "https://images.alphacoders.com/228/228543.jpg", link:"https://unstop.com/p/ahouba-e-blitz-freefire-tournament-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643605" },
+  { id: 15, nodeId: "16", chapter: "EVENT 16", title: "CHESS [ON-SITE]", desc: "The ultimate game of strategy. Outmaneuver the grandmasters in physical combat.", bgImg: "https://images3.alphacoders.com/549/549929.jpg" },
+  { id: 16, nodeId: "17", chapter: "EVENT 17", title: "GAME-Y [ON-SITE]", desc: "A mystery gaming challenge designed to test your reflexes across multiple genres.", bgImg: "https://images6.alphacoders.com/861/861596.jpg" },
+  { id: 17, nodeId: "18", chapter: "EVENT 18", title: "ARCADE", desc: "Relive the classics. High scores and flashing lights await the arcade king.", bgImg: "https://images.alphacoders.com/985/985149.png" },
   
   // --- ROBOTICS & HARDWARE ---
-  { id: 18, nodeId: "19", chapter: "EVENT 19", title: "ROBOWAR", desc: "Sparks will fly. Metal-on-metal destruction in the ultimate bot arena.", bgImg: "https://images.alphacoders.com/604/604770.jpg" }, // Gurren Lagann (Mecha Drill)
-  { id: 19, nodeId: "20", chapter: "EVENT 20", title: "LINE FOLLOWER", desc: "Precision engineering. Program your bot to navigate the path with zero error.", bgImg: "https://images5.alphacoders.com/434/434604.jpg" }, // Robotics;Notes (Small Robot)
-  { id: 20, nodeId: "21", chapter: "EVENT 21", title: "ROBO RACE", desc: "Built for speed. Drag race your robotic creations to the finish line.", bgImg: "https://images8.alphacoders.com/476/476698.jpg" }, // Redline (Speed/Racing)
-  { id: 21, nodeId: "22", chapter: "EVENT 22", title: "CIRCUIT DESIGN", desc: "Logic gates and electron flows. Bridge the gap between components.", bgImg: "https://images7.alphacoders.com/105/1059424.jpg" }, // Dr. Stone (Lightbulb/Science)
-  { id: 22, nodeId: "23", chapter: "EVENT 23", title: "PCB DESIGN", desc: "The architecture of hardware. Lay out the traces that power modern devices.", bgImg: "https://images3.alphacoders.com/211/211925.jpg" }, // Lain (Hardware/Chips)
-  { id: 23, nodeId: "24", chapter: "EVENT 24", title: "DRONE RACE", desc: "Aero-dynamic dominance. Navigate the air gates at blistering speeds.", bgImg: "https://images5.alphacoders.com/105/1053787.jpg" }, // Weathering With You (Sky/Clouds)
-  { id: 24, nodeId: "25", chapter: "EVENT 25", title: "SUMO FIGHT", desc: "Pure power. Push the opponent out of the ring using clever weight distribution.", bgImg: "https://images.alphacoders.com/956/956461.jpg" }, // Hinomaru Sumo (Impact)
-  { id: 25, nodeId: "26", chapter: "EVENT 26", title: "SCRAP TECH", desc: "Innovation from waste. Build functional tech using only recycled materials.", bgImg: "https://images6.alphacoders.com/913/913251.jpg" }  // Megalo Box (Junk Gear)
+  { id: 18, nodeId: "19", chapter: "EVENT 19", title: "ROBOWAR", desc: "Sparks will fly. Metal-on-metal destruction in the ultimate bot arena.", bgImg: "https://images.alphacoders.com/604/604770.jpg", link:"https://unstop.com/p/mecha-ragnarok-robo-wars-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644228" },
+  { id: 19, nodeId: "20", chapter: "EVENT 20", title: "LINE FOLLOWER", desc: "Precision engineering. Program your bot to navigate the path with zero error.", bgImg: "https://images5.alphacoders.com/434/434604.jpg", link:"https://unstop.com/p/shinobis-path-line-follower-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643909" },
+  { id: 20, nodeId: "21", chapter: "EVENT 21", title: "ROBO RACE", desc: "Built for speed. Drag race your robotic creations to the finish line.", bgImg: "https://images8.alphacoders.com/476/476698.jpg", link:"https://unstop.com/p/velocity-shinkansen-robo-race-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644256" },
+  { id: 21, nodeId: "22", chapter: "EVENT 22", title: "CIRCUIT DESIGN", desc: "Logic gates and electron flows. Bridge the gap between components.", bgImg: "https://images7.alphacoders.com/105/1059424.jpg", link: "https://unstop.com/p/circuit-design-competition-rulebook-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643037" },
+  { id: 22, nodeId: "23", chapter: "EVENT 23", title: "PCB DESIGN", desc: "The architecture of hardware. Lay out the traces that power modern devices.", bgImg: "https://images3.alphacoders.com/211/211925.jpg", link:"https://unstop.com/p/board-forgemaster-pcb-design-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644262" },
+  { id: 23, nodeId: "24", chapter: "EVENT 24", title: "DRONE RACE", desc: "Aero-dynamic dominance. Navigate the air gates at blistering speeds.", bgImg: "https://images5.alphacoders.com/105/1053787.jpg", link:"https://unstop.com/p/sky-hunters-drone-assembly-race-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644271" },
+  { id: 24, nodeId: "25", chapter: "EVENT 25", title: "SUMO FIGHT", desc: "Pure power. Push the opponent out of the ring using clever weight distribution.", bgImg: "https://images.alphacoders.com/956/956461.jpg", link:"https://unstop.com/p/dohyo-showdown-sumo-fight-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643891" },
+  { id: 25, nodeId: "26", chapter: "EVENT 26", title: "SCRAP TECH", desc: "Innovation from waste. Build functional tech using only recycled materials.", bgImg: "https://images6.alphacoders.com/913/913251.jpg" },
+
+  // --- CULTURAL & PERFORMING ARTS ---
+  { 
+    id: 26, 
+    nodeId: "27", 
+    chapter: "EVENT 27", 
+    title: "DANCE (SOLO) [IIITM]", 
+    desc: "Showcase your rhythm and expression. The stage is yours to conquer.", 
+    bgImg: "https://images.alphacoders.com/839/839882.jpg", 
+    link: "https://unstop.com/p/solo-dance-competitioniiitm-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647221",
+    titleSize: "text-2xl md:text-4xl lg:text-5xl"
+  },
+  { id: 27, nodeId: "28", chapter: "EVENT 28", title: "SINGING [OPEN]", desc: "Let your voice resonate. A battle of melodies and vocal prowess.", bgImg: "https://images.alphacoders.com/606/606276.png", link: "https://unstop.com/p/singing-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647204" },
+  { id: 28, nodeId: "29", chapter: "EVENT 29", title: "DRAWING", desc: "Manifest your imagination on canvas. Where art meets passion.", bgImg: "https://images5.alphacoders.com/110/1107963.jpg", link: "https://unstop.com/events/drawing-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647048" },
+  { id: 29, nodeId: "30", chapter: "EVENT 30", title: "DEBATE", desc: "A clash of ideologies. Convince, conquer, and command the room.", bgImg: "https://images.alphacoders.com/226/226093.jpg", link: "https://unstop.com/events/debate-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647033" },
+  { id: 30, nodeId: "31", chapter: "EVENT 31", title: "DANCE (GROUP) [IIITM]", desc: "Synchronized chaos. Unite in motion and set the floor on fire.", bgImg: "https://images3.alphacoders.com/654/654518.png", link: "https://unstop.com/events/group-dance-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647022" },
+  { 
+    id: 31, 
+    nodeId: "32", 
+    chapter: "EVENT 32", 
+    title: "DANCE (SOLO) [OPEN]", 
+    desc: "Open to all challengers. Define elegance and energy in a solo performance.", 
+    bgImg: "https://images.alphacoders.com/165/165270.jpg", 
+    link: "https://unstop.com/events/solo-dance-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1647007",
+    titleSize: "text-2xl md:text-4xl lg:text-5xl"
+  },
+  { id: 32, nodeId: "33", chapter: "EVENT 33", title: "COSPLAY", desc: "Bring fiction to reality. Embody your favorite characters in style.", bgImg: "https://images3.alphacoders.com/120/1201413.jpg", link: "https://unstop.com/p/cosplay-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644312" },
+  { id: 33, nodeId: "34", chapter: "EVENT 34", title: "POETRY", desc: "Weave words into emotions. The power of verse and rhyme.", bgImg: "https://images2.alphacoders.com/463/463973.jpg", link: "https://unstop.com/events/poetry-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1644298" },
+  { id: 34, nodeId: "35", chapter: "EVENT 35", title: "DANCE (GROUP) [OPEN]", desc: "The ultimate crew showdown. Coordination is key to victory.", bgImg: "https://images.alphacoders.com/710/710609.jpg", link: "https://unstop.com/p/dance-competition-ahouba-30-indian-institute-of-information-technology-iiit-senapati-manipur-1643535" }
+
 ].map(event => ({
   ...event,
-  titleSize: "text-3xl md:text-5xl lg:text-7xl",
-  descSize: "text-[11px] md:text-sm lg:text-base"
+  titleSize: event.titleSize || "text-3xl md:text-5xl lg:text-7xl",
+  descSize: "text-[11px] md:text-sm lg:text-base",
+  link: event.link ? event.link : `/events/${event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
 }));
 
 const EventPage = () => {
+  const navigate = useNavigate(); 
   const [activeIndex, setActiveIndex] = useState(0);
   const isAnimating = useRef(false);
   const stringPathRef = useRef(null);
@@ -103,6 +136,22 @@ const EventPage = () => {
     setTimeout(() => { isAnimating.current = false; }, 650);
   };
 
+  const handleEventClick = (index, link) => {
+    const diff = getShortestDiff(index);
+    
+    if (diff === 0) {
+      if (link.startsWith('http')) {
+        window.open(link, '_blank', 'noopener,noreferrer');
+      } else {
+        navigate(link);
+      }
+    } else if (diff === 1) {
+      nextEvent();
+    } else if (diff === -1) {
+      prevEvent();
+    }
+  };
+
   const touchStartY = useRef(0);
   const handleTouchStart = (e) => { touchStartY.current = e.touches[0].clientY; };
   const handleTouchEnd = (e) => {
@@ -118,10 +167,18 @@ const EventPage = () => {
     const handleKeyDown = (e) => {
       if (e.key === "ArrowDown" || e.key === "ArrowRight") nextEvent();
       if (e.key === "ArrowUp" || e.key === "ArrowLeft") prevEvent();
+      if (e.key === "Enter") {
+        const currentLink = EVENT_DATA[activeIndex].link;
+        if (currentLink.startsWith('http')) {
+             window.open(currentLink, '_blank', 'noopener,noreferrer');
+        } else {
+             navigate(currentLink);
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [activeIndex, navigate]);
 
   const getContainerStyles = (index) => {
     const diff = getShortestDiff(index);
@@ -149,7 +206,7 @@ const EventPage = () => {
 
   const getContentStyles = (index) => {
     const diff = getShortestDiff(index);
-    if (diff === 0) return { top: '22%', left: '45%', transform: 'translate(-50%, -50%) scale(1)' }; 
+    if (diff === 0) return { top: '22%', left: '40%', transform: 'translate(-50%, -50%) scale(1)' }; 
     if (diff === 1) return { top: '50%', left: '75%', transform: 'translate(-50%, -50%) scale(0.85)' }; 
     if (diff === 2) return { top: '82%', left: '45%', transform: 'translate(-50%, -50%) scale(0.6)' }; 
     if (diff === -1) return { top: '50%', left: '15%', transform: 'translate(-50%, -50%) scale(0.4)' }; 
@@ -207,7 +264,7 @@ const EventPage = () => {
               <div 
                 className={`group absolute inset-0 w-full h-full overflow-hidden transition-all ease-[cubic-bezier(0.25,1,0.5,1)] hover:!duration-150 ${isVisible ? 'cursor-pointer pointer-events-auto' : 'pointer-events-none'}`}
                 style={{ clipPath: styles.clipPath, opacity: styles.opacity, backgroundColor: styles.backgroundColor, transitionDuration: styles.transitionDuration }}
-                onClick={() => { if (diff === 1) nextEvent(); if (diff === -1) prevEvent(); }}
+                onClick={() => handleEventClick(index, event.link)} 
               >
                 {isNearby && (
                   <>
@@ -219,7 +276,7 @@ const EventPage = () => {
                       style={{ ...getContentStyles(index), transitionDuration: styles.transitionDuration }}
                     >
                       {isVisible && (
-                        <div className="flex flex-col items-center w-full px-4 py-2">
+                        <div className="relative flex flex-col items-center w-full px-4 py-2">
                           <div className="flex items-center gap-2 mb-3 md:mb-6 transition-transform group-hover:-translate-y-1">
                             <div className={`w-6 md:w-8 h-1 skew-x-[-20deg] ${diff === 0 ? 'bg-orange-600' : 'bg-white/40'}`} />
                             <span className={`text-[10px] lg:text-xs font-black tracking-[0.2em] uppercase ${diff === 0 ? 'text-orange-500' : 'text-white/80'}`}>
@@ -237,8 +294,22 @@ const EventPage = () => {
                               {event.desc}
                             </p>
                           </div>
+                          
+                          {/* "CLICK TO REGISTER" TEXT - Shifted RIGHT to 60% */}
+                          {diff === 0 && (
+                            <div className="absolute top-[100%] mt-6 left-[45%] -translate-x-1/2 w-full flex flex-col gap-1 items-center justify-center pointer-events-none">
+                               <span className="text-orange-500 font-black text-[10px] md:text-xs tracking-[0.2em] uppercase animate-pulse drop-shadow-[0_0_10px_rgba(249,115,22,0.8)]">
+                                 [ CLICK TO ]
+                               </span>
+                               <span className="text-orange-500 font-black text-[10px] md:text-xs tracking-[0.2em] uppercase animate-pulse drop-shadow-[0_0_10px_rgba(249,115,22,0.8)]">
+                                 REGISTER
+                               </span>
+                            </div>
+                          )}
+
                         </div>
                       )}
+                      
                       {isVisible && (
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] md:text-[30vw] lg:text-[25vw] font-black text-white/5 italic tracking-tighter select-none -z-10 mix-blend-overlay transition-all group-hover:text-white/10 group-hover:scale-105">
                           {event.nodeId}
